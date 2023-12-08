@@ -30,3 +30,21 @@ export const waitUntilBugpilotAvailable = (cb, attempts_ = 0) => {
 
   cb();
 };
+
+export const sendReport = ({ email, description }) => {
+  const msg = {
+    type: "io.bugpilot.events.send-report",
+    data: { email, description },
+  };
+
+  // @TODO: also send widgetStartTime, widgetFinishTime,
+  // and add them to metadata (see Bugpilot.ts)
+
+  window.postMessage(msg, "*");
+};
+
+export function hasArrayChanged(a = [], b = []) {
+  return (
+    a.length !== b.length || a.some((item, index) => !Object.is(item, b[index]))
+  );
+}

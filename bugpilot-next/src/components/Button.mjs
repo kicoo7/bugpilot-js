@@ -1,0 +1,58 @@
+export function Button({
+  children,
+  onClick,
+  style,
+  size,
+  type = "button",
+  variant = "default",
+}) {
+  const getStyles = () => {
+    let styles = {};
+
+    if (size === "icon") {
+      styles = {
+        background: "none",
+        ...styles,
+      };
+    }
+    if (size === "sm") {
+      styles = {
+        padding: "0.25rem 0.5rem",
+        fontSize: "0.875rem",
+        lineHeight: "1.25rem",
+        ...styles,
+      };
+    }
+
+    if (variant === "default") {
+      styles = {
+        background: "#111",
+        color: "#fff",
+        ...styles,
+      };
+    }
+
+    return styles;
+  };
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "0.5rem 1rem",
+        borderRadius: "0.375rem",
+        background: "red",
+        fontSize: "1rem",
+        lineHeight: "1.5rem",
+        fontWeight: "500",
+        ...getStyles(),
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  );
+}

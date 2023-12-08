@@ -123,7 +123,7 @@ export const Bugpilot = ({
     }
 
     waitUntilBugpilotAvailable(() => {
-      window.Bugpilot.lougout();
+      window.Bugpilot.logout();
     });
   }, []);
 

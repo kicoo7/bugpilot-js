@@ -25,3 +25,28 @@ export const useBugpilot: () => {
   identify: (user: User) => void;
   logout: () => void;
 };
+
+type BugpilotErrorPageProps = {
+  error: Error | { digest: string };
+  reset: () => void;
+}
+
+export const BugpilotErrorPage: FC<BugpilotErrorPageProps>;
+
+type BugpilotErrorBoundaryProps = {
+  children: React.ReactNode;
+  onReset: () => {};
+  FallbackComponent: React.ReactNode;
+}
+
+export const BugpilotErrorBoundary: FC<BugpilotErrorBoundaryProps>;
+
+type useBugpilotErrorBoundaryResult = {
+  showBoundary: ()=>{};
+  resetBoundary: ()=>{};
+}
+
+export const useBugpilotErrorBoundary: () => useBugpilotErrorBoundaryResult;
+
+
+export const BugpilotErrorAlert: FC<any>;
