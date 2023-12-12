@@ -44,6 +44,8 @@ export function FallbackDialog({
         inset: 0,
         backdropFilter: "blur(4px)",
         display: "flex",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        zIndex: 999999999,
       }}
     >
       <div

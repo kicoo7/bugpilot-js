@@ -2,11 +2,12 @@ import { Alert, AlertDescription, AlertTitle } from "./Alert.mjs";
 import { Button } from "./Button.mjs";
 import { RefreshIcon } from "./RefreshIcon.mjs";
 
-export function FallbackComponent({ error, resetErrorBoundary }) {
-  const title = "Error";
-  const description =
-    "We couldn't load your component at this time. Please try again.";
-
+export function FallbackComponent({
+  error,
+  resetErrorBoundary,
+  title,
+  description,
+}) {
   function onResetClick() {
     resetErrorBoundary?.();
   }

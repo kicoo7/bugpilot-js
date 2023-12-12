@@ -21,8 +21,6 @@ export function BugpilotErrorAlert() {
     </Alert>
   );
 
-  console.log("renderedChildren", renderedChildren, error, didCatch, isHandled);
-
   return (
     didCatch === true &&
     isHandled === true &&

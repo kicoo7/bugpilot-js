@@ -108,7 +108,16 @@ export class ErrorBoundary extends Component {
 export function BugpilotErrorBoundary({
   children,
   onReset = () => {},
-  FallbackComponent = BugpilotFallbackComponent,
+  FallbackComponent = ({ error, resetErrorBoundary }) => (
+    <BugpilotFallbackComponent
+      error={error}
+      resetErrorBoundary={resetErrorBoundary}
+      title={title}
+      description={description}
+    />
+  ),
+  title = "Error",
+  description = "We couldn't load your component at this time. Please try again.",
 }) {
   const { saveBugReport } = useBugpilot();
 

@@ -1,7 +1,9 @@
 export function Button({
+  id,
   children,
   onClick,
   style,
+  className,
   size,
   type = "button",
   variant = "default",
@@ -37,8 +39,10 @@ export function Button({
 
   return (
     <button
+      id={id}
       type={type}
       onClick={onClick}
+      className={className}
       style={{
         display: "inline-flex",
         alignItems: "center",

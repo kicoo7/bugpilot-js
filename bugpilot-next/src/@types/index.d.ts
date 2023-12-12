@@ -50,3 +50,9 @@ export const useBugpilotErrorBoundary: () => useBugpilotErrorBoundaryResult;
 
 
 export const BugpilotErrorAlert: FC<any>;
+
+
+export const withErrors: (func: () => Promise<any>) => () => Promise<any>;
+
+
+export const BugpilotReportBugComponent: FC<any>;
