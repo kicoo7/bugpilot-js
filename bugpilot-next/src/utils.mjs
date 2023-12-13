@@ -48,3 +48,58 @@ export function hasArrayChanged(a = [], b = []) {
     a.length !== b.length || a.some((item, index) => !Object.is(item, b[index]))
   );
 }
+
+export async function captureError({ error, context, kind }) {
+  if (error instanceof "Error" === false) {
+    throw new Error("Bugpilot.captureError: error must be of type Error");
+  }
+
+  // TODO: check if all params in context are available
+  if (typeof context !== "object") {
+    throw new Error("Bugpilot.captureError: context must be of type object");
+  }
+
+  const ALLOWED_KINDS = ["error-page", "server-action"];
+
+  if (ALLOWED_KINDS.find(kind)) {
+    throw new Error(
+      "Bugpilot.captureError: kind must be one of " + ALLOWED_KINDS.join(", ")
+    );
+  }
+
+  const result = await fetch(`https://events-error.bugpilot.io/error`, {
+    method: "POST",
+    headers: {
+      Origin: context?.origin,
+      "Content-Type": "application/json",
+      "X-Dev-Mode": "1",
+    },
+    body: JSON.stringify({
+      error: {
+        // TODO: Do we need this?
+        type: "error-click",
+        jsErrors: [
+          {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+          },
+        ],
+      },
+      reportId: context?.reportId,
+      workspaceId: context?.workspaceId,
+      userId: context?.anonymousId,
+      timestamp: Date.now(),
+      url: context?.url,
+      kind: "error-page",
+    }),
+  });
+}
+
+export function isNotFoundError(error) {
+  return Boolean(error?.digest?.startsWith("NEXT_NOT_FOUND"));
+}
+
+export function isRedirectError(error) {
+  return Boolean(error?.digest?.startsWith("NEXT_REDIRECT;"));
+}

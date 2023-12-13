@@ -1,20 +1,18 @@
+import { runWithAsyncContext } from "./runWithAsyncContext.mjs";
+import { captureError, isRedirectError } from "./utils.mjs";
+
 export function withErrors(fun) {
-  return async function (...args) {
-    try {
-      return await fun(...args);
-    } catch (error) {
-      if (typeof window !== "undefined") {
-        console.log("captureClientError called: ", error);
-      } else {
-        console.log("captureServerError:", error);
+  return async (...args) =>
+    runWithAsyncContext(async (context) => {
+      try {
+        await fun(...args);
+      } catch (error) {
+        // skip 404 and redirect NEXT errors
+        if (!isNotFoundError(error) && !isRedirectError(error)) {
+          captureError({ error, context, kind: "server-action" });
+        }
 
-        // cookies will be used to identify the report-id
-        const { cookies } = require("next/headers");
-        const cookie = cookies().get("bugpilot_anonymous_id");
-        console.log("cookie", cookie);
+        throw error;
       }
-
-      throw error;
-    }
-  };
+    });
 }

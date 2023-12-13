@@ -124,7 +124,7 @@ export function BugpilotErrorBoundary({
   return (
     <ErrorBoundary
       FallbackComponent={FallbackComponent}
-      onError={saveBugReport}
+      onError={() => console.log("onError")}
       onReset={onReset}
     >
       {children}

@@ -48,11 +48,8 @@ type useBugpilotErrorBoundaryResult = {
 
 export const useBugpilotErrorBoundary: () => useBugpilotErrorBoundaryResult;
 
-
-export const BugpilotErrorAlert: FC<any>;
-
-
-export const withErrors: (func: () => Promise<any>) => () => Promise<any>;
-
+export const withErrors: (func: (...params?:any) => Promise<any|void>) => (...params?:any) => Promise<any|void> ;
 
 export const BugpilotReportBugComponent: FC<any>;
+
+export const wrapServerComponent: (Component: any) => FC<any>;
