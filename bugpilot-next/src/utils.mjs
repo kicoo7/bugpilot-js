@@ -50,7 +50,7 @@ export function hasArrayChanged(a = [], b = []) {
 }
 
 export async function captureError({ error, context, kind }) {
-  if (error instanceof "Error" === false) {
+  if (error instanceof Error === false) {
     throw new Error("Bugpilot.captureError: error must be of type Error");
   }
 
@@ -59,24 +59,25 @@ export async function captureError({ error, context, kind }) {
     throw new Error("Bugpilot.captureError: context must be of type object");
   }
 
-  const ALLOWED_KINDS = ["error-page", "server-action"];
+  const ALLOWED_KINDS = ["error-page", "server-action", "custom"];
 
-  if (ALLOWED_KINDS.find(kind)) {
+  if (!ALLOWED_KINDS.find((val) => val === kind)) {
     throw new Error(
       "Bugpilot.captureError: kind must be one of " + ALLOWED_KINDS.join(", ")
     );
   }
+
+  const DEV_MODE = context?.url.includes("localhost");
 
   const result = await fetch(`https://events-error.bugpilot.io/error`, {
     method: "POST",
     headers: {
       Origin: context?.origin,
       "Content-Type": "application/json",
-      "X-Dev-Mode": "1",
+      "X-Dev-Mode": DEV_MODE === true ? "1" : "0",
     },
     body: JSON.stringify({
       error: {
-        // TODO: Do we need this?
         type: "error-click",
         jsErrors: [
           {
@@ -94,6 +95,12 @@ export async function captureError({ error, context, kind }) {
       kind: "error-page",
     }),
   });
+
+  if (result.ok === true) {
+    console.debug("Bugpilot.captureError: error sent successfully");
+  } else {
+    console.error("Bugpilot.captureError: error failed to send");
+  }
 }
 
 export function isNotFoundError(error) {
@@ -102,4 +109,17 @@ export function isNotFoundError(error) {
 
 export function isRedirectError(error) {
   return Boolean(error?.digest?.startsWith("NEXT_REDIRECT;"));
+}
+
+export function getClientContext() {
+  const context = {
+    origin: window?.location?.origin,
+    url: window?.location?.href,
+    // TODO: generate reportId?
+    reportId: "reportId-k" + Date.now(), //window?.localStorage?.getItem("Bugpilot::reportId"),
+    anonymousId: window?.localStorage?.getItem("Bugpilot::anonymousId"),
+    // TODO: get workspaceId
+    workspaceId: "71e2aba3-108e-43dd-8459-6b462dc01253",
+  };
+  return context;
 }
