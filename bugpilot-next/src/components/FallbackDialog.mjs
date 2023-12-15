@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "./Button.mjs";
 import { RefreshIcon } from "./RefreshIcon.mjs";
 import { XIcon } from "./XIcon.mjs";
-import { sendReport } from "../utils.mjs";
+import { sendReport } from "../core.mjs";
 
 export function FallbackDialog({
   error,

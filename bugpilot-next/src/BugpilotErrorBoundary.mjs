@@ -1,15 +1,13 @@
 "use client";
 import React, { Component, createElement } from "react";
-import { useBugpilot } from "./Bugpilot.mjs";
 import { ErrorBoundaryContext } from "./ErrorBoundaryContext.mjs";
 import { hasArrayChanged } from "./utils.mjs";
 import { FallbackComponent as BugpilotFallbackComponent } from "./components/FallbackComponent.mjs";
+import { captureError, getClientContext } from "./core.mjs";
 
-// Start react-error-boundary
 const initialState = {
   didCatch: false,
   error: null,
-  isHandled: false,
 };
 
 export class ErrorBoundary extends Component {
@@ -21,11 +19,7 @@ export class ErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Simone: this is the case we want to "handle the error" and just show and error message
-    if (error?.message?.includes("BugpilotError") === true) {
-      return { didCatch: true, error, isHandled: true };
-    }
-    return { didCatch: true, error, isHandled: false };
+    return { didCatch: true, error };
   }
 
   resetErrorBoundary(...args) {
@@ -71,11 +65,11 @@ export class ErrorBoundary extends Component {
 
   render() {
     const { children, FallbackComponent } = this.props;
-    const { didCatch, error, isHandled } = this.state;
+    const { didCatch, error } = this.state;
 
     let childToRender = children;
 
-    if (didCatch === true && isHandled === false) {
+    if (didCatch === true) {
       const props = {
         error,
         resetErrorBoundary: this.resetErrorBoundary,
@@ -95,15 +89,12 @@ export class ErrorBoundary extends Component {
           didCatch,
           error,
           resetErrorBoundary: this.resetErrorBoundary,
-          isHandled,
         },
       },
       childToRender
     );
   }
 }
-
-// End react-error-boundary
 
 export function BugpilotErrorBoundary({
   children,
@@ -119,12 +110,15 @@ export function BugpilotErrorBoundary({
   title = "Error",
   description = "We couldn't load your component at this time. Please try again.",
 }) {
-  const { saveBugReport } = useBugpilot();
+  function onError(error, info) {
+    const context = getClientContext();
+    captureError(error, { context, kind: "error-boundary" });
+  }
 
   return (
     <ErrorBoundary
       FallbackComponent={FallbackComponent}
-      onError={() => console.log("onError")}
+      onError={onError}
       onReset={onReset}
     >
       {children}

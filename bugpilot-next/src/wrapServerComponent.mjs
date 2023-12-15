@@ -1,16 +1,25 @@
-import { runWithAsyncContext } from "./runWithAsyncContext.mjs";
-import { captureError, isNotFoundError, isRedirectError } from "./utils.mjs";
+import { runWithServerContext } from "./runWithServerContext.mjs";
+import {
+  isDynamicServerUsageError,
+  isNotFoundError,
+  isRedirectError,
+} from "./utils.mjs";
+import { captureError } from "./core.mjs";
 
 export function wrapServerComponent(appDirComponent) {
   return new Proxy(appDirComponent, {
     apply: (originalFunction, thisArg, args) => {
-      return runWithAsyncContext((context) => {
+      return runWithServerContext((context) => {
         let maybePromiseResult;
 
-        const handleErrorCase = (e) => {
+        const handleErrorCase = (error) => {
           // skip 404 and redirect NEXT errors
-          if (!isNotFoundError(e) && !isRedirectError(e)) {
-            captureError({ error: e, context, kind: "server-component" });
+          if (
+            !isNotFoundError(error) &&
+            !isRedirectError(error) &&
+            !isDynamicServerUsageError(error)
+          ) {
+            captureError(error, { context, kind: "server-component" });
           }
         };
 
