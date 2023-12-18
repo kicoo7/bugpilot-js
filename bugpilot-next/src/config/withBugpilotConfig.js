@@ -6,27 +6,41 @@ module.exports = function withBugpilotConfig(nextConfig) {
       config,
       { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
     ) => {
-      console.log("config", isServer, nextRuntime);
       const newConfig = { ...config };
 
-      if (isServer === true && nextRuntime === "nodejs") {
+      if (
+        isServer === true
+        // && nextRuntime === "nodejs"
+      ) {
         newConfig.module = {
           ...newConfig.module,
           rules: [...(newConfig.module?.rules || [])],
         };
 
-        newConfig.module.rules.push({
-          test: /page\.tsx$/,
+        newConfig.module.rules.unshift({
+          test: /\.tsx$/,
+          // todo: exclude head, not_found, global-error, etc.
+          exclude: /(layout|error).tsx$/,
           use: [
             {
-              loader: path.resolve(__dirname, "wrapExportLoader.js"),
+              loader: path.resolve(__dirname, "serverComponentsLoader.js"),
             },
-            defaultLoaders.babel,
+          ],
+        });
+
+        newConfig.module.rules.unshift({
+          test: /\.ts$/,
+          // todo: exclude head, not_found, global-error, etc.
+          exclude: /(layout|error).tsx$/,
+          use: [
+            {
+              loader: path.resolve(__dirname, "serverActionLoader.js"),
+            },
           ],
         });
       }
 
-      // console.log("config after:", config.module.rules);
+      // to do: route, middleware.
 
       return newConfig;
     },

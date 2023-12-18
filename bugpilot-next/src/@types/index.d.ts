@@ -53,5 +53,6 @@ export const withErrors: (func: (...params?:any) => Promise<any|void>) => (...pa
 export const BugpilotReportBugComponent: FC<any>;
 
 export const wrapServerComponent: (Component: any) => FC<any>;
+export const wrapPageComponent: (Component: any) => FC<any>;
 
 export const withBugpilotConfig: (nextConfig: any) => any;
