@@ -29,15 +29,13 @@ module.exports = function (source) {
 
   let hasWrappedServerAction = false;
 
-  console.log("server action source", source);
-
   // find all Server Action functions and wrap them with wrapServerAction
   traverse(ast, {
     enter(path) {
       if (
         path.node.async === true &&
-        path.parentPath.isExportNamedDeclaration() &&
-        path.isFunctionDeclaration()
+        path.isFunctionDeclaration() &&
+        path.parentPath.isExportNamedDeclaration()
       ) {
         hasWrappedServerAction = true;
 
@@ -49,19 +47,22 @@ module.exports = function (source) {
           path.node.async
         );
 
-        const wrappedInlineServerAction = t.variableDeclaration("var", [
+        // var <serverActionName> = wrapServerAction(function(args){...})
+        const wrappedServerAction = t.variableDeclaration("var", [
           t.variableDeclarator(
             t.identifier(path.node.id.name),
             t.callExpression(wrapImportIdentifier, [expression])
           ),
         ]);
 
-        path.replaceWith(wrappedInlineServerAction);
+        path.replaceWith(wrappedServerAction);
         path.skip();
       } else if (
         path.node.async === true &&
-        path.parentPath.isExportNamedDeclaration() &&
-        path.isArrowFunctionExpression()
+        path.isArrowFunctionExpression() &&
+        path.parentPath.isVariableDeclarator() &&
+        path.parentPath.parentPath.isVariableDeclaration() &&
+        path.parentPath.parentPath.parentPath.isExportNamedDeclaration()
       ) {
         hasWrappedServerAction = true;
         path.replaceWith(t.callExpression(wrapImportIdentifier, [path.node]));
@@ -76,6 +77,5 @@ module.exports = function (source) {
   }
 
   const output = generate(ast);
-  console.log("output", output.code);
   return output.code;
 };
