@@ -8,39 +8,26 @@ module.exports = function withBugpilotConfig(nextConfig) {
     ) => {
       const newConfig = { ...config };
 
-      if (
-        isServer === true
-        // && nextRuntime === "nodejs"
-      ) {
+      if (isServer === true && nextRuntime === "nodejs") {
         newConfig.module = {
           ...newConfig.module,
           rules: [...(newConfig.module?.rules || [])],
         };
 
         newConfig.module.rules.unshift({
-          test: /\.tsx$/,
+          test: /\.(ts|tsx)$/,
           // todo: exclude head, not_found, global-error, etc.
-          exclude: /(layout|error).tsx$/,
+          exclude: /(layout|error|global-error|not_found).tsx$/,
           use: [
             {
               loader: path.resolve(__dirname, "serverComponentsLoader.js"),
             },
-          ],
-        });
-
-        newConfig.module.rules.unshift({
-          test: /\.ts$/,
-          // todo: exclude head, not_found, global-error, etc.
-          exclude: /(layout|error).tsx$/,
-          use: [
             {
               loader: path.resolve(__dirname, "serverActionLoader.js"),
             },
           ],
         });
       }
-
-      // to do: route, middleware.
 
       return newConfig;
     },

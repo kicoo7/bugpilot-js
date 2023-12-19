@@ -14,11 +14,7 @@ export function wrapServerComponent(appDirComponent) {
 
         const handleErrorCase = (error) => {
           // skip 404 and redirect NEXT errors
-          if (
-            !isNotFoundError(error) &&
-            !isRedirectError(error) &&
-            !isDynamicServerUsageError(error)
-          ) {
+          if (!isNotFoundError(error) && !isRedirectError(error)) {
             captureError(error, { context, kind: "server-component" });
           }
         };

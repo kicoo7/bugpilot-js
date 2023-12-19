@@ -1,23 +1,15 @@
 import { runWithServerContext } from "./runWithServerContext.mjs";
-import {
-  isDynamicServerUsageError,
-  isNotFoundError,
-  isRedirectError,
-} from "./utils.mjs";
+import { isNotFoundError, isRedirectError } from "./utils.mjs";
 import { captureError } from "./core.mjs";
 
-export function withErrors(fun) {
+export function wrapServerAction(fun) {
   return async (...args) =>
     runWithServerContext(async (context) => {
       try {
         await fun(...args);
       } catch (error) {
         // skip 404 and redirect NEXT errors
-        if (
-          !isNotFoundError(error) &&
-          !isRedirectError(error) &&
-          !isDynamicServerUsageError(error)
-        ) {
+        if (!isNotFoundError(error) && !isRedirectError(error)) {
           captureError(error, { context, kind: "server-action" });
         }
 

@@ -4,122 +4,76 @@ const t = require("@babel/types");
 const generate = require("@babel/generator").default;
 
 module.exports = function (source) {
+  /**
+   * Files that contain Server Actions contain this string.
+   */
   if (!source.includes("__next_internal_action_entry_do_not_use__")) {
     console.log(
-      "\n" +
-        this.resourcePath +
-        " does not contain Server Actions. Skipping... \n"
+      this.resourcePath + " does not contain Server Actions. Skipping... \n"
     );
     return source;
   }
 
   const ast = babelParser.parse(source, {
     sourceType: "module",
-    plugins: ["typescript", "jsx", "tsx", "jsxs"],
+    plugins: ["typescript", "jsx"],
   });
 
-  // import { withErrors } from "@bugpilot/next";
-  const wrapImportIdentifier = t.identifier("withErrors");
+  // import { wrapServerAction } from "@bugpilot/next"; to the top of the file
+  const wrapImportIdentifier = t.identifier("wrapServerAction");
   const wrapImportDeclaration = t.importDeclaration(
-    [t.importSpecifier(wrapImportIdentifier, t.identifier("withErrors"))],
+    [t.importSpecifier(wrapImportIdentifier, t.identifier("wrapServerAction"))],
     t.stringLiteral("@bugpilot/next")
   );
   ast.program.body.unshift(wrapImportDeclaration);
 
-  // find all Server Action functions
-  traverse(ast, {
-    FunctionDeclaration(path) {
-      // we only wrap exported server-actions
-      if (
-        !path.parentPath.isExportDefaultDeclaration() &&
-        !path.parentPath.isExportNamedDeclaration()
-      ) {
-        console.log("path", path.node.id.name);
-        return;
-      }
+  let hasWrappedServerAction = false;
 
-      // check if the function returns a JSX element and is async
-      if (path.node.async) {
-        // creates a copy of the original ServerAction (i.e. updateProfile will become _updateProfile)
-        const copyFunctionIdentifier = t.identifier("_" + path.node.id.name);
-        const copyFunctionDeclaration = t.functionDeclaration(
-          copyFunctionIdentifier,
+  console.log("server action source", source);
+
+  // find all Server Action functions and wrap them with wrapServerAction
+  traverse(ast, {
+    enter(path) {
+      if (
+        path.node.async === true &&
+        path.parentPath.isExportNamedDeclaration() &&
+        path.isFunctionDeclaration()
+      ) {
+        hasWrappedServerAction = true;
+
+        const expression = t.functionExpression(
+          null,
           path.node.params,
           path.node.body,
           path.node.generator,
           path.node.async
         );
 
-        // wraps it with withErrors
-        const wrappedExpression = t.callExpression(wrapImportIdentifier, [
-          copyFunctionIdentifier,
-        ]);
-
-        // const serverAction = withErrors(_serverAction);
-        const variable = t.variableDeclaration("const", [
+        const wrappedInlineServerAction = t.variableDeclaration("var", [
           t.variableDeclarator(
             t.identifier(path.node.id.name),
-            wrappedExpression
+            t.callExpression(wrapImportIdentifier, [expression])
           ),
         ]);
 
-        path.parentPath.insertBefore(copyFunctionDeclaration);
-        // path.parentPath.insertBefore(variable);
-
-        const newNamedExport = t.exportNamedDeclaration(variable);
-        path.parentPath.insertBefore(newNamedExport);
-        path.parentPath.remove();
-
-        // inserts the copy Server Action in the file
-        // path.parentPath.insertBefore(copyFunctionDeclaration);
-
-        // creates a nameless function copy of the Server Action
-        // const expression = t.functionExpression(
-        //   null,
-        //   path.node.params,
-        //   path.node.body,
-        //   path.node.generator,
-        //   path.node.async
-        // );
-
-        // wrap the copy Server Action with the wrapper function
-        // const wrappedExpression = t.callExpression(wrapImportIdentifier, [
-        //   copyFunctionIdentifier,
-        // ]);
-
-        if (path.parentPath.isExportDefaultDeclaration()) {
-          //   const newDefaultExport =
-          //     t.exportDefaultDeclaration(wrappedExpression);
-          //   const newDefaultExport = t.exportDefaultDeclaration(variable);
-          //   ast.program.body.push(newDefaultExport);
-          //   path.replaceWith(newDefaultExport);
-        } else if (path.parentPath.isExportNamedDeclaration()) {
-          //   const variable = t.variableDeclaration("const", [
-          //     t.variableDeclarator(
-          //       t.identifier(path.node.id.name),
-          //       wrappedExpression
-          //     ),
-          //   ]);
-          //   const newNamedExport = t.exportNamedDeclaration(variable);
-          //   path.replaceWith(wrappedFunction);
-          //   ast.program.body.push(newNamedExport);
-        }
-
-        // path.parentPath.remove();
+        path.replaceWith(wrappedInlineServerAction);
+        path.skip();
+      } else if (
+        path.node.async === true &&
+        path.parentPath.isExportNamedDeclaration() &&
+        path.isArrowFunctionExpression()
+      ) {
+        hasWrappedServerAction = true;
+        path.replaceWith(t.callExpression(wrapImportIdentifier, [path.node]));
+        path.skip();
       }
     },
-    // ArrowFunctionExpression(path) {
-    //   // check if the function returns a JSX element
-    //   if (isReturningJSXElement(path)) {
-    //     // check if it's default export and page.tsx w
-    //     console.log(
-    //       `The function ${
-    //         path.node.id?.name || "(anonymous)"
-    //       } returns a JSX element. Wrapping with wrapServerComponent.`
-    //     );
-    //   }
-    // },
   });
+
+  // remove import { wrapServerAction } from @bugpilot/next since no Server Actions were found
+  if (hasWrappedServerAction === false) {
+    ast.program.body.shift();
+  }
 
   const output = generate(ast);
   console.log("output", output.code);
