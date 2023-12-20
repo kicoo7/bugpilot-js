@@ -17,18 +17,24 @@ module.exports = function withBugpilotConfig(nextConfig) {
         newConfig.module.rules.unshift({
           test: /\.(ts|tsx)$/,
           // todo: exclude head, not_found, global-error, etc.
-          exclude: /(layout|error|global-error|not_found).tsx$/,
+          exclude: /(layout|error|global-error|not_found|middleware).tsx$/,
           include: /app/,
 
           use: [
             {
               loader: path.resolve(__dirname, "loader.js"),
+              options: {
+                buildId,
+                dev,
+                nextRuntime,
+              },
             },
           ],
         });
       }
 
-      return newConfig;
+      if (isServer === false) {
+      }
     },
   };
 };

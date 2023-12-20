@@ -20,7 +20,6 @@ export async function captureError(error, context = {}) {
     )
   ) {
     logger.warn("Bugpilot.captureError: error is a Next.js server error");
-    logger.warn("Bugpilot.captureError: error is not captured");
     return;
   }
 

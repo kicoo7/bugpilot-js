@@ -19,11 +19,21 @@ module.exports = function (source) {
     return source;
   }
 
+  const options = this.getOptions();
+
   // checks if there are any Server Actions in the file
   const hasServerActions = containsServerActions(source);
   // set of bugpilot functions that we need to import
   const imports = new Set();
   const filePath = getRelativePath(this.resourcePath);
+  const baseContext = {
+    buildId: options?.buildId,
+    dev: String(options?.dev),
+    nextRuntime: options?.nextRuntime,
+    filePath,
+  };
+
+  console.log("context", baseContext);
 
   const ast = babelParser.parse(source, {
     sourceType: "module",
@@ -39,12 +49,15 @@ module.exports = function (source) {
           path.parentPath.isExportDefaultDeclaration()
         ) {
           imports.add("wrapPageComponent");
-          wrap(path, "wrapPageComponent", { filePath, kind: "page-component" });
+          wrap(path, "wrapPageComponent", {
+            ...baseContext,
+            kind: "page-component",
+          });
           path.skip();
         } else {
           imports.add("wrapServerComponent");
           wrap(path, "wrapServerComponent", {
-            filePath,
+            ...baseContext,
             kind: "server-component",
           });
           path.skip();
@@ -54,7 +67,7 @@ module.exports = function (source) {
       if (hasServerActions === true && isServerAction(path)) {
         imports.add("wrapServerAction");
         wrap(path, "wrapServerAction", {
-          filePath,
+          ...baseContext,
           kind: "server-action",
         });
         path.skip();

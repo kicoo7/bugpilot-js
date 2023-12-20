@@ -17,7 +17,7 @@ export async function getSessionContext() {
 
     context = {
       origin: headers().get("origin"),
-      url: headers().get("referer") || "to do: unknown url",
+      url: headers().get("referer") || "unknown url",
       anonymousId: cookies().get("com.bugpilot.user.anonymousid").value,
       workspaceId,
       reportId,
