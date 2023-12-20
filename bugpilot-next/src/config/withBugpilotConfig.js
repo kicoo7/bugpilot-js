@@ -24,12 +24,6 @@ module.exports = function withBugpilotConfig(nextConfig) {
             {
               loader: path.resolve(__dirname, "loader.js"),
             },
-            // {
-            //   loader: path.resolve(__dirname, "serverComponentsLoader.js"),
-            // },
-            // {
-            //   loader: path.resolve(__dirname, "serverActionLoader.js"),
-            // },
           ],
         });
       }

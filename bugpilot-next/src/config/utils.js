@@ -35,6 +35,78 @@ module.exports.containsServerActions = function (source) {
 };
 
 /**
+ * IMPORTANT: We don't check for React class components.
+ * Return true if node is a function declaration (function MyReactComponent) or arrow function (()=>{}) and returns jsx.
+ * @param {Path} path
+ * @returns {boolean}
+ */
+module.exports.isReactElement = function (path) {
+  let isReactElement = false;
+  if (path.isFunctionDeclaration() || path.isArrowFunctionExpression()) {
+    isReactElement = isReturningJSXElement(path);
+  }
+
+  return isReactElement;
+};
+
+/**
+ * Returns true if node is exported (named, not default), async, function or arrow function.
+ * Important: Additionally we check if the "use server" directive is used.
+ * i.e export async function myServerAction() {} or export const myServerAction = async () => {}
+ * @param {*} path
+ * @returns {boolean}
+ */
+module.exports.isServerAction = function (path) {
+  return Boolean(
+    path.node.async === true &&
+      ((path.isFunctionDeclaration() &&
+        path?.parentPath?.isExportNamedDeclaration()) ||
+        (path.isArrowFunctionExpression() &&
+          path?.parentPath?.isVariableDeclarator() &&
+          path?.parentPath?.parentPath?.isVariableDeclaration() &&
+          path?.parentPath?.parentPath?.parentPath?.isExportNamedDeclaration())) &&
+      isReturningJSXElement(path) === false
+  );
+};
+
+/**
+ * Wraps FunctionDeclaration or ArrowFunctionExpression with a function call with context.
+ * @param {*} path - path to FunctionDeclaration or ArrowFunctionExpression
+ * @param {string} wrapFunctionName - name of the wrapping function. Needs to be imported in the file.
+ * @param {object} options - options that are passed to the wrapping function
+ * @returns
+ */
+module.exports.wrap = function (path, wrapFunctionName, options) {
+  let optionsNode = t.nullLiteral();
+  // transform object to objectExpression
+  if (options && typeof options === "object") {
+    options = {
+      ...options,
+      // add the name of the function or the variable in case it's an arrow function
+      functionName:
+        path?.node?.id?.name || path?.parentPath?.node?.id?.name || "unknown",
+    };
+
+    // create a node from the options object
+    optionsNode = t.objectExpression(
+      Object.entries(options).map(([key, value]) =>
+        t.objectProperty(t.identifier(key), t.stringLiteral(value))
+      )
+    );
+  }
+
+  if (path.isArrowFunctionExpression()) {
+    return wrapArrowFunction(path, wrapFunctionName, optionsNode);
+  } else if (path.isFunctionDeclaration()) {
+    return wrapFunctionDeclaration(path, wrapFunctionName, optionsNode);
+  } else {
+    throw new Error(
+      "Wrapping failed. Unsupported node type. Only arrow functions and function declarations are supported."
+    );
+  }
+};
+
+/**
  * Helper function that returns true if node returns a JSX element.
  * @param {Path} path
  * @returns {boolean}
@@ -55,36 +127,6 @@ function isReturningJSXElement(path) {
   });
   return foundJSX;
 }
-
-/**
- * IMPORTANT: We don't check for React class components.
- * Return true if node is a function declaration (function MyReactComponent) or arrow function (()=>{}) and returns jsx.
- * @param {Path} path
- * @returns {boolean}
- */
-module.exports.isReactElement = function (path) {
-  let isReactElement = false;
-  if (path.isFunctionDeclaration() || path.isArrowFunctionExpression()) {
-    isReactElement = isReturningJSXElement(path);
-  }
-
-  return isReactElement;
-};
-
-/**
- * Returns true if node is exported (named, not default), async, function or arrow function.
- * @param {*} path
- * @returns {boolean}
- */
-module.exports.isServerAction = function (path) {
-  return Boolean(
-    path.node.async === true &&
-      path?.parentPath?.isExportNamedDeclaration() &&
-      (path.isFunctionDeclaration() ||
-        (path.isArrowFunctionExpression() &&
-          isReturningJSXElement(path) === false))
-  );
-};
 
 function wrapArrowFunction(path, wrapFunctionName, optionsNode) {
   return path.replaceWith(
@@ -121,25 +163,3 @@ function wrapFunctionDeclaration(path, wrapFunctionName, optionsNode) {
     path.replaceWith(wrappedFunction);
   }
 }
-
-module.exports.wrap = function (path, wrapFunctionName, options) {
-  let optionsNode = t.nullLiteral();
-  // transform object to objectExpression
-  if (options && typeof options === "object") {
-    optionsNode = t.objectExpression(
-      Object.entries(options).map(([key, value]) =>
-        t.objectProperty(t.identifier(key), t.stringLiteral(value))
-      )
-    );
-  }
-
-  if (path.isArrowFunctionExpression()) {
-    return wrapArrowFunction(path, wrapFunctionName, optionsNode);
-  } else if (path.isFunctionDeclaration()) {
-    return wrapFunctionDeclaration(path, wrapFunctionName, optionsNode);
-  } else {
-    throw new Error(
-      "Wrapping failed. Unsupported node type. Only arrow functions and function declarations are supported."
-    );
-  }
-};

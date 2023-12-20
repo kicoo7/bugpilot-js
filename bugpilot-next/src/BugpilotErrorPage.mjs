@@ -8,7 +8,7 @@ export function BugpilotErrorPage({ error, reset }) {
   const { saveBugReport } = useBugpilot();
   useEffect(() => {
     const context = getClientContext();
-    captureError(error, { context, kind: "error-page" });
+    captureError(error, { ...context, kind: "error-page" });
     saveBugReport({ triggerType: "error-page" });
   }, []);
 

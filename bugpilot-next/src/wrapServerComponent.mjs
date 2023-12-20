@@ -1,5 +1,6 @@
 import { isNotFoundError, isRedirectError } from "./utils.mjs";
 import { captureError } from "./core.mjs";
+import { getSessionContext } from "./context/getSessionContext";
 
 export function wrapServerComponent(appDirComponent, context) {
   return new Proxy(appDirComponent, {
@@ -9,7 +10,9 @@ export function wrapServerComponent(appDirComponent, context) {
       const handleErrorCase = (error) => {
         // skip 404 and redirect NEXT errors
         if (!isNotFoundError(error) && !isRedirectError(error)) {
-          captureError(error, context);
+          Promise.resolve(getSessionContext()).then((sessionContext) => {
+            captureError(error, { ...context, ...sessionContext });
+          });
         }
       };
 

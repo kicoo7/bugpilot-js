@@ -3,7 +3,7 @@ import { getCookie } from "./utils.mjs";
 
 // VERCEL_URL, VERCEL_GIT_COMMIT_SHA
 
-export async function captureError(error, options = {}) {
+export async function captureError(error, context = {}) {
   if (error instanceof Error === false) {
     logger.error(
       "Bugpilot.captureError: error must be of type Error. Got: ",
@@ -12,13 +12,6 @@ export async function captureError(error, options = {}) {
     logger.warn("Bugpilot.captureError: error is not captured");
     return;
   }
-
-  // const ALLOWED_KINDS = [
-  //   "error-page",
-  //   "error-boundary",
-  //   "server-action",
-  //   "custom",
-  // ];
 
   if (
     error.digest &&
@@ -32,10 +25,9 @@ export async function captureError(error, options = {}) {
   }
 
   try {
-    const { context, kind } = options;
     const DEV_MODE = context?.url?.includes("localhost") || "0";
 
-    console.log("options", JSON.stringify(options, null, 2));
+    console.log("context", JSON.stringify(context, null, 2));
 
     const response = await fetch(`https://events-error.bugpilot.io/error`, {
       method: "POST",
@@ -61,7 +53,9 @@ export async function captureError(error, options = {}) {
         userId: context?.anonymousId,
         timestamp: Date.now(),
         url: context?.url,
-        kind,
+        kind: context?.kind,
+        filePath: context?.filePath,
+        functionName: context?.functionName,
       }),
     });
 

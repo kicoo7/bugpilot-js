@@ -21,14 +21,9 @@ module.exports = function (source) {
 
   // checks if there are any Server Actions in the file
   const hasServerActions = containsServerActions(source);
-
   // set of bugpilot functions that we need to import
   const imports = new Set();
-
-  let context = {
-    filePath: getRelativePath(this.resourcePath),
-    // add to default context here
-  };
+  const filePath = getRelativePath(this.resourcePath);
 
   const ast = babelParser.parse(source, {
     sourceType: "module",
@@ -38,39 +33,30 @@ module.exports = function (source) {
   traverse(ast, {
     enter(path) {
       // .tsx files that return jsx are Pages, Layouts, Server Components, etc.
-      if (/.tsx$/.test(context.filePath) && isReactElement(path)) {
+      if (/.tsx$/.test(filePath) && isReactElement(path)) {
         if (
-          /^app\/(?:.*\/)?page\.tsx/.test(context.filePath) &&
+          /^app\/(?:.*\/)?page\.tsx/.test(filePath) &&
           path.parentPath.isExportDefaultDeclaration()
         ) {
-          context = {
-            ...context,
-            kind: "page-component",
-            name: path?.node?.id?.name || "unknown",
-          };
           imports.add("wrapPageComponent");
-          wrap(path, "wrapPageComponent", context);
+          wrap(path, "wrapPageComponent", { filePath, kind: "page-component" });
           path.skip();
         } else {
-          context = {
-            ...context,
-            kind: "server-component",
-            name: path?.node?.id?.name || "unknown",
-          };
           imports.add("wrapServerComponent");
-          wrap(path, "wrapServerComponent", context);
+          wrap(path, "wrapServerComponent", {
+            filePath,
+            kind: "server-component",
+          });
           path.skip();
         }
       }
 
       if (hasServerActions === true && isServerAction(path)) {
-        context = {
-          ...context,
-          kind: "server-action",
-          name: path?.node?.id?.name || "unknown",
-        };
         imports.add("wrapServerAction");
-        wrap(path, "wrapServerAction", context);
+        wrap(path, "wrapServerAction", {
+          filePath,
+          kind: "server-action",
+        });
         path.skip();
       }
     },

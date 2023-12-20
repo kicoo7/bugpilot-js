@@ -112,7 +112,7 @@ export function BugpilotErrorBoundary({
 }) {
   function onError(error, info) {
     const context = getClientContext();
-    captureError(error, { context, kind: "error-boundary" });
+    captureError(error, { ...context, kind: "error-boundary" });
   }
 
   return (
