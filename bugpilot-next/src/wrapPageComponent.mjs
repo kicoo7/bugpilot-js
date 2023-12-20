@@ -1,21 +1,41 @@
 import { isNotFoundError, isRedirectError } from "./utils.mjs";
 import { captureError } from "./core.mjs";
 
-// no idea why Sentry do sth like this... if page is async, it will be wrapped in a proxy
-export function wrapPageComponent(appDirPageComponent) {
-  // handles function components
-  return new Proxy(appDirPageComponent, {
-    apply: (target, thisArg, args) => {
-      try {
-        console.log("1");
-        return target.apply(thisArg, args);
-      } catch (e) {
-        console.log("error in error");
-        console.log("2", error);
+export function wrapPageComponent(appDirComponent, context) {
+  return new Proxy(appDirComponent, {
+    apply: (originalFunction, thisArg, args) => {
+      let maybePromiseResult;
+
+      const handleErrorCase = (error) => {
+        // skip 404 and redirect NEXT errors
         if (!isNotFoundError(error) && !isRedirectError(error)) {
-          captureError(error, { context, kind: "server-page" });
+          captureError(error, context);
         }
+      };
+
+      try {
+        maybePromiseResult = originalFunction.apply(thisArg, args);
+      } catch (e) {
+        handleErrorCase(e);
         throw e;
+      }
+
+      if (
+        typeof maybePromiseResult === "object" &&
+        maybePromiseResult !== null &&
+        "then" in maybePromiseResult
+      ) {
+        Promise.resolve(maybePromiseResult).then(
+          () => {},
+          (e) => {
+            handleErrorCase(e);
+          }
+        );
+        // It is very important that we return the original promise here, because Next.js attaches various properties
+        // to that promise and will throw if they are not on the returned value.
+        return maybePromiseResult;
+      } else {
+        return maybePromiseResult;
       }
     },
   });

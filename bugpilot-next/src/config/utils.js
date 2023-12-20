@@ -86,13 +86,13 @@ module.exports.isServerAction = function (path) {
   );
 };
 
-function wrapArrowFunction(path, wrapFunctionName) {
+function wrapArrowFunction(path, wrapFunctionName, optionsNode) {
   return path.replaceWith(
-    t.callExpression(t.identifier(wrapFunctionName), [path.node])
+    t.callExpression(t.identifier(wrapFunctionName), [path.node, optionsNode])
   );
 }
 
-function wrapFunctionDeclaration(path, wrapFunctionName) {
+function wrapFunctionDeclaration(path, wrapFunctionName, optionsNode) {
   const expression = t.functionExpression(
     null,
     path.node.params,
@@ -105,7 +105,10 @@ function wrapFunctionDeclaration(path, wrapFunctionName) {
   const wrappedFunction = t.variableDeclaration("var", [
     t.variableDeclarator(
       originalFunctionIdentifier,
-      t.callExpression(t.identifier(wrapFunctionName), [expression])
+      t.callExpression(t.identifier(wrapFunctionName), [
+        expression,
+        optionsNode,
+      ])
     ),
   ]);
 
@@ -119,11 +122,21 @@ function wrapFunctionDeclaration(path, wrapFunctionName) {
   }
 }
 
-module.exports.wrap = function (path, wrapFunctionName, options = {}) {
+module.exports.wrap = function (path, wrapFunctionName, options) {
+  let optionsNode = t.nullLiteral();
+  // transform object to objectExpression
+  if (options && typeof options === "object") {
+    optionsNode = t.objectExpression(
+      Object.entries(options).map(([key, value]) =>
+        t.objectProperty(t.identifier(key), t.stringLiteral(value))
+      )
+    );
+  }
+
   if (path.isArrowFunctionExpression()) {
-    return wrapArrowFunction(path, wrapFunctionName);
+    return wrapArrowFunction(path, wrapFunctionName, optionsNode);
   } else if (path.isFunctionDeclaration()) {
-    return wrapFunctionDeclaration(path, wrapFunctionName);
+    return wrapFunctionDeclaration(path, wrapFunctionName, optionsNode);
   } else {
     throw new Error(
       "Wrapping failed. Unsupported node type. Only arrow functions and function declarations are supported."

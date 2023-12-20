@@ -5,7 +5,6 @@ const {
   getRelativePath,
   containsServerActions,
   isClientComponent,
-  isReturningJSXElement,
   isReactElement,
   isServerAction,
   wrap,
@@ -23,52 +22,55 @@ module.exports = function (source) {
   // checks if there are any Server Actions in the file
   const hasServerActions = containsServerActions(source);
 
-  const relativePath = getRelativePath(this.resourcePath);
-  console.log("server: " + relativePath);
+  // set of bugpilot functions that we need to import
+  const imports = new Set();
+
+  let context = {
+    filePath: getRelativePath(this.resourcePath),
+    // add to default context here
+  };
 
   const ast = babelParser.parse(source, {
     sourceType: "module",
     plugins: ["typescript", "jsx"],
   });
 
-  // set of bugpilot functions that we need to import
-  const imports = new Set();
-
-  // t.objectExpression([
-  //   t.objectProperty(
-  //     t.identifier("name"),
-  //     t.stringLiteral(path.parentPath.node.id.name)
-  //   ),
-  //   t.objectProperty(
-  //     t.identifier("filePath"),
-  //     t.stringLiteral(resourcePath)
-  //   ),
-  //   t.objectProperty(
-  //     t.identifier("kind"),
-  //     t.stringLiteral("server-component")
-  //   ),
-
   traverse(ast, {
     enter(path) {
       // .tsx files that return jsx are Pages, Layouts, Server Components, etc.
-      if (/.tsx$/.test(relativePath) && isReactElement(path)) {
+      if (/.tsx$/.test(context.filePath) && isReactElement(path)) {
         if (
-          /^app\/(?:.*\/)?page\.tsx/.test(relativePath) &&
+          /^app\/(?:.*\/)?page\.tsx/.test(context.filePath) &&
           path.parentPath.isExportDefaultDeclaration()
         ) {
+          context = {
+            ...context,
+            kind: "page-component",
+            name: path?.node?.id?.name || "unknown",
+          };
           imports.add("wrapPageComponent");
-          wrap(path, "wrapPageComponent");
+          wrap(path, "wrapPageComponent", context);
           path.skip();
         } else {
+          context = {
+            ...context,
+            kind: "server-component",
+            name: path?.node?.id?.name || "unknown",
+          };
           imports.add("wrapServerComponent");
-          wrap(path, "wrapServerComponent");
+          wrap(path, "wrapServerComponent", context);
           path.skip();
         }
       }
 
       if (hasServerActions === true && isServerAction(path)) {
+        context = {
+          ...context,
+          kind: "server-action",
+          name: path?.node?.id?.name || "unknown",
+        };
         imports.add("wrapServerAction");
-        wrap(path, "wrapServerAction");
+        wrap(path, "wrapServerAction", context);
         path.skip();
       }
     },
