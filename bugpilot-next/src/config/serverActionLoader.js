@@ -1,6 +1,7 @@
 const babelParser = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 const t = require("@babel/types");
+const { getRelativePath } = require("./utils");
 const generate = require("@babel/generator").default;
 
 module.exports = function (source) {
@@ -29,6 +30,8 @@ module.exports = function (source) {
 
   let hasWrappedServerAction = false;
 
+  const resourcePath = getRelativePath(this.resourcePath);
+
   // find all Server Action functions and wrap them with wrapServerAction
   traverse(ast, {
     enter(path) {
@@ -51,7 +54,23 @@ module.exports = function (source) {
         const wrappedServerAction = t.variableDeclaration("var", [
           t.variableDeclarator(
             t.identifier(path.node.id.name),
-            t.callExpression(wrapImportIdentifier, [expression])
+            t.callExpression(wrapImportIdentifier, [
+              expression,
+              t.objectExpression([
+                t.objectProperty(
+                  t.identifier("name"),
+                  t.stringLiteral(path.node.id.name)
+                ),
+                t.objectProperty(
+                  t.identifier("filePath"),
+                  t.stringLiteral(resourcePath)
+                ),
+                t.objectProperty(
+                  t.identifier("kind"),
+                  t.stringLiteral("server-action")
+                ),
+              ]),
+            ])
           ),
         ]);
 
@@ -65,7 +84,25 @@ module.exports = function (source) {
         path.parentPath.parentPath.parentPath.isExportNamedDeclaration()
       ) {
         hasWrappedServerAction = true;
-        path.replaceWith(t.callExpression(wrapImportIdentifier, [path.node]));
+        path.replaceWith(
+          t.callExpression(wrapImportIdentifier, [
+            path.node,
+            t.objectExpression([
+              t.objectProperty(
+                t.identifier("name"),
+                t.stringLiteral(path.parentPath.node.id.name)
+              ),
+              t.objectProperty(
+                t.identifier("filePath"),
+                t.stringLiteral(resourcePath)
+              ),
+              t.objectProperty(
+                t.identifier("kind"),
+                t.stringLiteral("server-action")
+              ),
+            ]),
+          ])
+        );
         path.skip();
       }
     },

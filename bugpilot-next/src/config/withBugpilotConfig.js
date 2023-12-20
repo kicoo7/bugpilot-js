@@ -18,13 +18,18 @@ module.exports = function withBugpilotConfig(nextConfig) {
           test: /\.(ts|tsx)$/,
           // todo: exclude head, not_found, global-error, etc.
           exclude: /(layout|error|global-error|not_found).tsx$/,
+          include: /app/,
+
           use: [
             {
-              loader: path.resolve(__dirname, "serverComponentsLoader.js"),
+              loader: path.resolve(__dirname, "loader.js"),
             },
-            {
-              loader: path.resolve(__dirname, "serverActionLoader.js"),
-            },
+            // {
+            //   loader: path.resolve(__dirname, "serverComponentsLoader.js"),
+            // },
+            // {
+            //   loader: path.resolve(__dirname, "serverActionLoader.js"),
+            // },
           ],
         });
       }

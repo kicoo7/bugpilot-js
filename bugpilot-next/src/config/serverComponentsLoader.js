@@ -1,6 +1,7 @@
 const babelParser = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 const t = require("@babel/types");
+const { getRelativePath } = require("./utils");
 const generate = require("@babel/generator").default;
 
 /**
@@ -39,6 +40,22 @@ function isClientComponent(source) {
   );
 }
 
+function getPageComponentContext({ path, filePath }) {
+  return t.objectExpression([
+    t.objectProperty(t.identifier("name"), t.stringLiteral(path.node.id.name)),
+    t.objectProperty(t.identifier("filePath"), t.stringLiteral(filePath)),
+    t.objectProperty(t.identifier("kind"), t.stringLiteral("server-page")),
+  ]);
+}
+
+function getServerComponentContext({ path, filePath }) {
+  return t.objectExpression([
+    t.objectProperty(t.identifier("name"), t.stringLiteral(path.node.id.name)),
+    t.objectProperty(t.identifier("filePath"), t.stringLiteral(filePath)),
+    t.objectProperty(t.identifier("kind"), t.stringLiteral("server-component")),
+  ]);
+}
+
 module.exports = function (source) {
   if (isClientComponent(source)) {
     console.log("client: " + this.resourcePath + ". Ignoring...");
@@ -65,6 +82,9 @@ module.exports = function (source) {
   );
   ast.program.body.unshift(wrapImportDeclaration);
 
+  const resourcePath = getRelativePath(this.resourcePath);
+  let context = null;
+
   traverse(ast, {
     enter(path) {
       // check if path is a function declaration and returns a JSX element
@@ -77,15 +97,26 @@ module.exports = function (source) {
           path.node.async
         );
 
+        const hasDefaultExport = path.parentPath.isExportDefaultDeclaration();
+        const hasNamedExport = path.parentPath.isExportNamedDeclaration();
+
+        context = getServerComponentContext({ path, filePath: resourcePath });
+
         const wrappedFunctionComponent = t.variableDeclaration("var", [
           t.variableDeclarator(
             t.identifier(path.node.id.name),
-            t.callExpression(wrapImportIdentifier, [expression])
+            t.callExpression(wrapImportIdentifier, [expression, context])
           ),
         ]);
 
+        // i want to update the context
         // is the component exported as default?
         if (path.parentPath.isExportDefaultDeclaration()) {
+          // export default function and returns jsx inside page.tsx (page component)
+          if (resourcePath.endsWith("page.tsx")) {
+            context = getPageComponentContext({ path, filePath: resourcePath });
+            console.log("context", context);
+          }
           const newExportDefault = t.exportDefaultDeclaration(
             t.identifier(path.node.id.name)
           );
@@ -110,7 +141,25 @@ module.exports = function (source) {
         t.isArrowFunctionExpression(path.node) &&
         isReturningJSXElement(path)
       ) {
-        path.replaceWith(t.callExpression(wrapImportIdentifier, [path.node]));
+        path.replaceWith(
+          t.callExpression(wrapImportIdentifier, [
+            path.node,
+            t.objectExpression([
+              t.objectProperty(
+                t.identifier("name"),
+                t.stringLiteral(path.parentPath.node.id.name)
+              ),
+              t.objectProperty(
+                t.identifier("filePath"),
+                t.stringLiteral(resourcePath)
+              ),
+              t.objectProperty(
+                t.identifier("kind"),
+                t.stringLiteral("server-component")
+              ),
+            ]),
+          ])
+        );
         path.skip();
       }
     },

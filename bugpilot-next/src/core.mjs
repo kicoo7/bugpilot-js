@@ -1,6 +1,8 @@
 import logger from "./logger.mjs";
 import { getCookie } from "./utils.mjs";
 
+// VERCEL_URL, VERCEL_GIT_COMMIT_SHA
+
 export async function captureError(error, options = {}) {
   if (error instanceof Error === false) {
     logger.error(
@@ -18,8 +20,8 @@ export async function captureError(error, options = {}) {
   //   "custom",
   // ];
 
-  // check if clientSide
   if (
+    error.digest &&
     error?.message?.includes(
       "The specific message is omitted in production builds to avoid leaking sensitive details."
     )
