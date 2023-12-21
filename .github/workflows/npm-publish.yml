@@ -31,7 +31,7 @@ jobs:
     steps:
       - run: echo token ${NODE_AUTH_TOKEN}
         env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
