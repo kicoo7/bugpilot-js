@@ -1,7 +1,7 @@
 {
-  "name": "@bugpilot/next",
-  "private": false,
-  "version": "0.1.0",
+  "name": "@kkicoo7/next-v2",
+  "private": true,
+  "version": "2.0.0",
   "description": "Bugpilot bindings for Next.js",
   "main": "index.mjs",
   "scripts": {
@@ -10,19 +10,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bugpilot/bugpilot-js.git"
+    "url": "git+https://github.com/kicoo7/bugpilot-js-v2.git"
   },
   "keywords": [
     "nextjs",
     "bug",
     "bugpilot"
   ],
-  "author": "Simone Lusenti <lusenti.s@gmail.com>",
+  "author": "Krste Rajchevski <rajchevski.krste@live.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bugpilot/bugpilot-js/issues"
+    "url": "https://github.com/kicoo7/bugpilot-js-v2/issues"
   },
-  "homepage": "https://github.com/bugpilot/bugpilot-js#readme",
+  "homepage": "https://github.com/kicoo7/bugpilot-js-v2#readme",
   "peerDependencies": {
     "react": "^18.2.0"
   },
@@ -42,5 +42,8 @@
     "@babel/preset-env": "^7.23.6",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3"
+  },
+  "directories": {
+    "test": "tests"
   }
 }
