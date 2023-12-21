@@ -80,7 +80,7 @@ module.exports = function (source) {
       [...imports].map((im) =>
         t.importSpecifier(t.identifier(im), t.identifier(im))
       ),
-      t.stringLiteral("@bugpilot/next")
+      t.stringLiteral("@kicoo7/next-v2")
     );
     ast.program.body.unshift(bugpilotImports);
   }
