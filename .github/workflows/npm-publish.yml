@@ -22,24 +22,26 @@ jobs:
             run_install: |
               - recursive: true
                 args: [--frozen-lockfile, --strict-peer-dependencies]
-      - run: cd bugpilot-next && pnpm i && npm test
+      - run: cd bugpilot-next && pnpm i && pnpm test
 
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
     environment: prod
     steps:
+      - run: echo token "${secrets.NPM_TOKEN}"
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
+          scope: '@kkicoo7'
       - uses: pnpm/action-setup@v2
         with:
             version: 8
             run_install: |
               - recursive: true
                 args: [--frozen-lockfile, --strict-peer-dependencies]
-      - run: cd bugpilot-next && pnpm i && npm publish
+      - run: cd bugpilot-next && pnpm i && pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
