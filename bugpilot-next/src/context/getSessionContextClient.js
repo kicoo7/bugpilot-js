@@ -1,6 +1,6 @@
 import { getCookie } from "../utils.mjs";
 
-// Returns the client context for client-side errors
+// Returns the client context for client-side error
 export function getClientContext() {
   let context = {};
   try {
