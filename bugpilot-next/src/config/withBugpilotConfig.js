@@ -33,8 +33,7 @@ module.exports = function withBugpilotConfig(nextConfig) {
         });
       }
 
-      if (isServer === false) {
-      }
+      return newConfig;
     },
   };
 };
