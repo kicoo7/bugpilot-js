@@ -1,7 +1,7 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.0.0",
+  "version": "2.0.20",
   "description": "Bugpilot bindings for Next.js",
   "main": "index.mjs",
   "scripts": {
