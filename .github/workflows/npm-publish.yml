@@ -33,6 +33,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0 # Fetches all history for all branches and tags
       - uses: actions/setup-node@v3
         with:
           node-version: 18
