@@ -49,6 +49,8 @@ export async function captureError(
             },
           ],
         },
+        build: context?.buildId,
+        nextRuntime: context?.nextRuntime,
         workspaceId: context?.workspaceId,
         userId: context?.anonymousId,
         reportId: context?.reportId,

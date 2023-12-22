@@ -10,6 +10,7 @@ export function wrapPageComponent(pageComponent: () => {}, context: any) {
       const handleErrorCase = (error: Error) => {
         // skip 404 and redirect NEXT errors
         if (!isNotFoundError(error) && !isRedirectError(error)) {
+          console.log("getSessionContextAsync", typeof getSessionContextAsync); // should log 'function'
           Promise.resolve(getSessionContextAsync()).then((sessionContext) => {
             captureError(error, { ...context, ...sessionContext });
           });
