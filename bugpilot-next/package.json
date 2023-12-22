@@ -1,7 +1,7 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Bugpilot bindings for Next.js",
   "main": "./dist/index.js",
   "scripts": {
@@ -29,8 +29,7 @@
     "react": "^18.2.0"
   },
   "files": [
-    "index.js",
-    "src/**/*"
+    "dist/**/*"
   ],
   "types": "./src/@types/index.d.ts",
   "devDependencies": {
