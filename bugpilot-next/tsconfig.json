@@ -8,12 +8,12 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "moduleResolution": "Node",
+    "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
   },
   "include": [
-    "./package.json",
     "src/**/*"
   ],
   "exclude": [

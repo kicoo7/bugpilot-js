@@ -9,12 +9,12 @@ import {
 } from "react";
 import logger from "../logger";
 
-import packageJson from "../../package.json";
 import * as React from "react";
 import { waitUntilBugpilotAvailable } from "./utils";
 
 const BUGPILOT_HOST = "https://script.bugpilot.io";
 const BUGPILOT_SCRIPT_FILENAME = "adopto.js";
+const BUGPILOT_VERSION = process.env.BUGPILOT_VERSION;
 
 declare global {
   interface Window {
@@ -30,7 +30,7 @@ const makeScriptUrl = (workspaceId: string) => {
   const url = new URL(BUGPILOT_HOST);
   url.pathname = `${workspaceId}/${BUGPILOT_SCRIPT_FILENAME}`;
   url.searchParams.set("source", "bugpilot-next");
-  url.searchParams.set("packageVersion", packageJson.version);
+  url.searchParams.set("packageVersion", BUGPILOT_VERSION);
   return url.toString();
 };
 
