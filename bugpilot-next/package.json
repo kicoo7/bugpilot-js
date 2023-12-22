@@ -1,7 +1,7 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Bugpilot bindings for Next.js",
   "main": "./dist/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "dist/**/*"
   ],
   "types": "./src/@types/index.d.ts",
-  "devDependencies": {
+  "dependencies": {
     "@babel/core": "^7.23.6",
     "@babel/generator": "^7.23.6",
     "@babel/parser": "^7.23.6",
