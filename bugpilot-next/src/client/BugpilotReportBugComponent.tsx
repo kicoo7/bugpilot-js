@@ -1,7 +1,15 @@
 "use client";
-import { Button } from "./components/Button.mjs";
+import { Button } from "./ui/Button";
 
-export function BugpilotReportBugComponent({ style, className, children }) {
+export function BugpilotReportBugComponent({
+  style,
+  className,
+  children,
+}: {
+  style?: {};
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <Button
       variant="default"

@@ -1,16 +1,22 @@
 import { useState } from "react";
-import { Button } from "./Button.mjs";
-import { RefreshIcon } from "./RefreshIcon.mjs";
-import { XIcon } from "./XIcon.mjs";
-import { sendReport } from "../core.mjs";
+import { Button } from "./Button";
+import { RefreshIcon } from "./RefreshIcon";
+import { XIcon } from "./XIcon";
+import { sendReport } from "../../core";
+
+type FallbackDialogProps = {
+  reset: () => void;
+  title?: string;
+  description?: string;
+  successMessage?: string;
+};
 
 export function FallbackDialog({
-  error,
   reset,
   title = "OOPS! SOMETHING WENT WRONG",
   description = "We have encountered an unexpected error. Please try again.",
   successMessage = "Issue reported. Thank you!",
-}) {
+}: FallbackDialogProps) {
   const [status, setStatus] = useState("default");
 
   function onCloseClick() {
@@ -25,14 +31,14 @@ export function FallbackDialog({
     setStatus("report");
   }
 
-  function onSubmit(event) {
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("submit");
-    const formData = new FormData(event.target);
-    const email = formData.get("email");
-    const description = formData.get("description");
+    // old code: event.target. Changed it because of typescript
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email"));
+    const description = String(formData.get("description"));
 
-    // checks if email/description doesn't work
     sendReport({ email, description });
     setStatus("submitted");
   }

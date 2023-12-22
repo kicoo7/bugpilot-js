@@ -1,28 +1,64 @@
 "use client";
-import React, { Component, createElement } from "react";
-import { ErrorBoundaryContext } from "./ErrorBoundaryContext.mjs";
-import { hasArrayChanged } from "./utils.mjs";
-import { FallbackComponent as BugpilotFallbackComponent } from "./components/FallbackComponent.mjs";
-import { captureError, getClientContext } from "./core.mjs";
+import {
+  Component,
+  ComponentType,
+  ErrorInfo,
+  PropsWithChildren,
+  createElement,
+} from "react";
+import { ErrorBoundaryContext } from "./ErrorBoundaryContext";
+import { FallbackComponent as BugpilotFallbackComponent } from "./ui/FallbackComponent";
+import { captureError } from "../core";
+import { getSessionContext } from "../context/getSessionContextClient";
+import { hasArrayChanged } from "./utils";
 
-const initialState = {
+type FallbackProps = {
+  error: any;
+  resetErrorBoundary: (...args: any[]) => void;
+};
+
+type ErrorBoundaryState =
+  | {
+      didCatch: true;
+      error: any;
+    }
+  | {
+      didCatch: false;
+      error: null;
+    };
+
+type ErrorBoundaryProps = PropsWithChildren<{
+  FallbackComponent: ComponentType<FallbackProps>;
+  onError?: (error: Error, info: ErrorInfo) => void;
+  onReset?: (
+    details:
+      | { reason: "imperative-api"; args: any[] }
+      | { reason: "keys"; prev: any[] | undefined; next: any[] | undefined }
+  ) => void;
+  resetKeys?: any[];
+}>;
+
+const initialState: ErrorBoundaryState = {
   didCatch: false,
   error: null,
 };
 
-export class ErrorBoundary extends Component {
-  constructor(props) {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
 
     this.resetErrorBoundary = this.resetErrorBoundary.bind(this);
     this.state = initialState;
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error) {
     return { didCatch: true, error };
   }
 
-  resetErrorBoundary(...args) {
+  resetErrorBoundary(...args: any[]) {
     const { error } = this.state;
 
     if (error !== null) {
@@ -35,11 +71,14 @@ export class ErrorBoundary extends Component {
     }
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch(error: Error, info: ErrorInfo) {
     this.props.onError?.(error, info);
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(
+    prevProps: ErrorBoundaryProps,
+    prevState: ErrorBoundaryState
+  ) {
     const { didCatch } = this.state;
     const { resetKeys } = this.props;
 
@@ -96,12 +135,16 @@ export class ErrorBoundary extends Component {
   }
 }
 
+type BugpilotErrorBoundaryProps = ErrorBoundaryProps & {
+  title: string;
+  description: string;
+};
+
 export function BugpilotErrorBoundary({
   children,
   onReset = () => {},
-  FallbackComponent = ({ error, resetErrorBoundary }) => (
+  FallbackComponent = ({ resetErrorBoundary }) => (
     <BugpilotFallbackComponent
-      error={error}
       resetErrorBoundary={resetErrorBoundary}
       title={title}
       description={description}
@@ -109,9 +152,9 @@ export function BugpilotErrorBoundary({
   ),
   title = "Error",
   description = "We couldn't load your component at this time. Please try again.",
-}) {
-  function onError(error, info) {
-    const context = getClientContext();
+}: BugpilotErrorBoundaryProps) {
+  function onError(error: Error) {
+    const context = getSessionContext();
     captureError(error, { ...context, kind: "error-boundary" });
   }
 

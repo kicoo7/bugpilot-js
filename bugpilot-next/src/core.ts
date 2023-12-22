@@ -1,9 +1,9 @@
-import logger from "./logger.mjs";
-import { getCookie } from "./utils.mjs";
+import logger from "./logger";
 
-// VERCEL_URL, VERCEL_GIT_COMMIT_SHA
-
-export async function captureError(error, context = {}) {
+export async function captureError(
+  error: Error & { digest?: string },
+  context: any = {}
+) {
   if (error instanceof Error === false) {
     logger.error(
       "Bugpilot.captureError: error must be of type Error. Got: ",
@@ -43,18 +43,18 @@ export async function captureError(error, context = {}) {
               message: error.message,
               stack: error.stack,
               name: error.name,
-              digest: error.digest,
+              digest: error?.digest,
+              filePath: context?.filePath,
+              functionName: context?.functionName,
             },
           ],
         },
-        reportId: context?.reportId,
         workspaceId: context?.workspaceId,
         userId: context?.anonymousId,
+        reportId: context?.reportId,
         timestamp: Date.now(),
         url: context?.url,
         kind: context?.kind,
-        filePath: context?.filePath,
-        functionName: context?.functionName,
       }),
     });
 
@@ -70,32 +70,13 @@ export async function captureError(error, context = {}) {
   }
 }
 
-// Returns the client context for client-side errors
-export function getClientContext() {
-  let context = {};
-  try {
-    const workspaceIdReportId = getCookie("com.bugpilot.report.id");
-    const [workspaceId, reportId] = workspaceIdReportId?.split(":");
-
-    context = {
-      origin: window.location.origin,
-      url: window.location.href,
-      reportId: reportId,
-      anonymousId: getCookie("com.bugpilot.user.anonymousid"),
-      workspaceId: workspaceId,
-    };
-  } catch (error) {
-    logger.error(
-      "Bugpilot.getClientContext: error while getting context",
-      error
-    );
-    logger.error("Bugpilot.getClientContext: returning empty context");
-  }
-
-  return context;
-}
-
-export const sendReport = ({ email, description }) => {
+export const sendReport = ({
+  email,
+  description,
+}: {
+  email: string;
+  description: string;
+}) => {
   const msg = {
     type: "io.bugpilot.events.send-report",
     data: { email, description },

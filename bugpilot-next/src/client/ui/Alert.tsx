@@ -1,4 +1,4 @@
-export function AlertTitle({ children }) {
+export function AlertTitle({ children }: { children?: React.ReactNode }) {
   return (
     <h3
       //"text-base font-semibold"
@@ -12,7 +12,7 @@ export function AlertTitle({ children }) {
   );
 }
 
-export function AlertDescription({ children }) {
+export function AlertDescription({ children }: { children?: React.ReactNode }) {
   return (
     <p
       //"text-sm tracking-tight"
@@ -26,7 +26,7 @@ export function AlertDescription({ children }) {
   );
 }
 
-export function Alert({ title, description, children }) {
+export function Alert({ children }: { children?: React.ReactNode }) {
   return (
     <div
       // "flex w-full flex-col gap-4 rounded-md border border-red-900 p-4"

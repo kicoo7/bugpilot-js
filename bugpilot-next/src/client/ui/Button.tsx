@@ -7,6 +7,15 @@ export function Button({
   size,
   type = "button",
   variant = "default",
+}: {
+  id?: string;
+  children?: React.ReactNode;
+  onClick?: () => void;
+  style?: {};
+  className?: string;
+  size?: "icon" | "sm";
+  type?: "button" | "submit";
+  variant?: "default";
 }) {
   const getStyles = () => {
     let styles = {};

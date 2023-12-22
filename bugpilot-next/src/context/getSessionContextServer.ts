@@ -1,30 +1,31 @@
 "use server";
 import { headers, cookies } from "next/headers";
-import logger from "./logger.mjs";
+import logger from "../logger";
 
-export async function runWithServerContext(fun) {
+/*
+ * Gets the session context for server-side errors
+ */
+export async function getSessionContextAsync() {
   let context = {};
 
   try {
+    // todo: get on initializiation
     const workspaceIdReportId = cookies().get("com.bugpilot.report.id").value;
     const [workspaceId, reportId] = workspaceIdReportId?.split(":");
 
     context = {
       origin: headers().get("origin"),
-      url: headers().get("referer"),
+      url: headers().get("referer") || "unknown url",
       anonymousId: cookies().get("com.bugpilot.user.anonymousid").value,
       workspaceId,
       reportId,
     };
   } catch (error) {
     logger.error(
-      "Bugpilot.runWithServerContext: error while getting context",
+      "Bugpilot.getSessionContext: error while getting context. returning empty context.",
       error
-    );
-    logger.warn(
-      "Bugpilot.runWithServerContext: running with empty ({}) context"
     );
   }
 
-  return await fun(context);
+  return context;
 }

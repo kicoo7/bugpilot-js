@@ -33,8 +33,6 @@ module.exports = function (source) {
     filePath,
   };
 
-  console.log("context", baseContext);
-
   const ast = babelParser.parse(source, {
     sourceType: "module",
     plugins: ["typescript", "jsx"],

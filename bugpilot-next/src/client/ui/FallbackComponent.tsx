@@ -1,13 +1,18 @@
-import { Alert, AlertDescription, AlertTitle } from "./Alert.mjs";
-import { Button } from "./Button.mjs";
-import { RefreshIcon } from "./RefreshIcon.mjs";
+import { Alert, AlertDescription, AlertTitle } from "./Alert";
+import { Button } from "./Button";
+import { RefreshIcon } from "./RefreshIcon";
+
+type FallbackComponentProps = {
+  resetErrorBoundary: (...args: any[]) => void;
+  title: string;
+  description: string;
+};
 
 export function FallbackComponent({
-  error,
   resetErrorBoundary,
   title,
   description,
-}) {
+}: FallbackComponentProps) {
   function onResetClick() {
     resetErrorBoundary?.();
   }

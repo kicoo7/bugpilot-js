@@ -1,5 +1,6 @@
 const path = require("path");
-module.exports = function withBugpilotConfig(nextConfig) {
+
+export function withBugpilotConfig(nextConfig: any) {
   return {
     ...nextConfig,
     webpack: (
@@ -36,4 +37,4 @@ module.exports = function withBugpilotConfig(nextConfig) {
       return newConfig;
     },
   };
-};
+}

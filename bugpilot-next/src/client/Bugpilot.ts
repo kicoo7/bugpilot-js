@@ -1,21 +1,32 @@
 "use client";
 
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
-import logger from "./logger.mjs";
-import { waitUntilBugpilotAvailable } from "./utils.mjs";
+import logger from "../logger";
 
-import packageJson from "../package.json";
+import packageJson from "../../package.json";
+import * as React from "react";
+import { waitUntilBugpilotAvailable } from "./utils";
 
 const BUGPILOT_HOST = "https://script.bugpilot.io";
 const BUGPILOT_SCRIPT_FILENAME = "adopto.js";
 
-const makeScriptUrl = (workspaceId) => {
+declare global {
+  interface Window {
+    Bugpilot: {
+      saveReport: (metadata: any, reportDataOverride: any) => void;
+      identify: (nextUser: any) => void;
+      logout: () => void;
+    };
+  }
+}
+
+const makeScriptUrl = (workspaceId: string) => {
   const url = new URL(BUGPILOT_HOST);
   url.pathname = `${workspaceId}/${BUGPILOT_SCRIPT_FILENAME}`;
   url.searchParams.set("source", "bugpilot-next");
@@ -24,17 +35,23 @@ const makeScriptUrl = (workspaceId) => {
 };
 
 const BugpilotContext = createContext({
-  saveBugReport: () => {},
-  identify: (nextUser) => {},
+  saveBugReport: (metadata = {}, reportDataOverride = {}) => {},
+  identify: (nextUser: any) => {},
   logout: () => {},
 });
+
+type BugpilotProps = React.PropsWithChildren<{
+  workspaceId: string;
+  enabled?: boolean;
+  user?: any;
+}>;
 
 export const Bugpilot = ({
   children,
   workspaceId,
   enabled = true,
   user = {},
-}) => {
+}: BugpilotProps) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -89,7 +106,6 @@ export const Bugpilot = ({
       if (typeof window === "undefined") {
         return;
       }
-
       waitUntilBugpilotAvailable(() => {
         window.Bugpilot.saveReport(metadata, reportDataOverride);
       });
@@ -97,7 +113,7 @@ export const Bugpilot = ({
     []
   );
 
-  const identify = useCallback((nextUser) => {
+  const identify = useCallback((nextUser: any) => {
     if (typeof window === "undefined") {
       return;
     }

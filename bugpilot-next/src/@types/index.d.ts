@@ -29,7 +29,7 @@ export const useBugpilot: () => {
 type BugpilotErrorPageProps = {
   error: Error | { digest: string };
   reset: () => void;
-}
+};
 
 export const BugpilotErrorPage: FC<BugpilotErrorPageProps>;
 
@@ -37,18 +37,20 @@ type BugpilotErrorBoundaryProps = {
   children: React.ReactNode;
   onReset: () => {};
   FallbackComponent: React.ReactNode;
-}
+};
 
 export const BugpilotErrorBoundary: FC<BugpilotErrorBoundaryProps>;
 
 type useBugpilotErrorBoundaryResult = {
-  showBoundary: ()=>{};
-  resetBoundary: ()=>{};
-}
+  showBoundary: () => {};
+  resetBoundary: () => {};
+};
 
 export const useBugpilotErrorBoundary: () => useBugpilotErrorBoundaryResult;
 
-export const wrapServerAction: (func: (...params?:any) => Promise<any|void>) => (...params?:any) => Promise<any|void> ;
+export const wrapServerAction: (
+  func: (...params: any) => Promise<any | void>
+) => (...params: any) => Promise<any | void>;
 
 export const BugpilotReportBugComponent: FC<any>;
 

@@ -1,7 +1,18 @@
-import { getCookie } from "../utils.mjs";
+import logger from "../logger";
 
-// Returns the client context for client-side error
-export function getClientContext() {
+/**
+ * Helper function that gets the cookie value by name
+ */
+export function getCookie(name: string) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
+
+/**
+ * Gets the session context for client-side errors
+ */
+export function getSessionContext() {
   let context = {};
   try {
     const workspaceIdReportId = getCookie("com.bugpilot.report.id");

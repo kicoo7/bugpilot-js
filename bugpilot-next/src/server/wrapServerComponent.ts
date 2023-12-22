@@ -1,16 +1,16 @@
-import { isNotFoundError, isRedirectError } from "./utils.mjs";
-import { captureError } from "./core.mjs";
-import { getSessionContext } from "./context/getSessionContext";
+import { captureError } from "../core";
+import { getSessionContextAsync } from "../context/getSessionContextServer";
+import { isNotFoundError, isRedirectError } from "./utils";
 
-export function wrapPageComponent(appDirComponent, context) {
-  return new Proxy(appDirComponent, {
+export function wrapServerComponent(serverComponent: () => {}, context: any) {
+  return new Proxy(serverComponent, {
     apply: (originalFunction, thisArg, args) => {
       let maybePromiseResult;
 
-      const handleErrorCase = (error) => {
+      const handleErrorCase = (error: Error) => {
         // skip 404 and redirect NEXT errors
         if (!isNotFoundError(error) && !isRedirectError(error)) {
-          Promise.resolve(getSessionContext()).then((sessionContext) => {
+          Promise.resolve(getSessionContextAsync()).then((sessionContext) => {
             captureError(error, { ...context, ...sessionContext });
           });
         }
