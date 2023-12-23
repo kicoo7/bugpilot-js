@@ -7,12 +7,11 @@ export function wrapServerComponent(serverComponent: () => {}, context: any) {
     apply: (originalFunction, thisArg, args) => {
       let maybePromiseResult;
 
-      const handleErrorCase = (error: Error) => {
+      const handleErrorCase = async (error: Error) => {
         // skip 404 and redirect NEXT errors
         if (!isNotFoundError(error) && !isRedirectError(error)) {
-          Promise.resolve(getSessionContextAsync()).then((sessionContext) => {
-            captureError(error, { ...context, ...sessionContext });
-          });
+          const sessionContext = await getSessionContextAsync();
+          await captureError(error, { ...context, ...sessionContext });
         }
       };
 
