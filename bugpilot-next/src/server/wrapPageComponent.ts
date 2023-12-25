@@ -2,7 +2,7 @@ import { captureError } from "../core";
 import { getSessionContextAsync } from "../context/getSessionContextServer";
 import { isNotFoundError, isRedirectError } from "./utils";
 
-export function wrapPageComponent(pageComponent: () => {}, context: any) {
+export function wrapPageComponent(pageComponent: () => {}, buildContext: any) {
   return new Proxy(pageComponent, {
     apply: (originalFunction: () => {}, thisArg: any, args: any) => {
       let maybePromiseResult;
@@ -11,7 +11,7 @@ export function wrapPageComponent(pageComponent: () => {}, context: any) {
         // skip 404 and redirect NEXT errors
         if (!isNotFoundError(error) && !isRedirectError(error)) {
           const sessionContext = await getSessionContextAsync();
-          await captureError(error, { ...context, ...sessionContext });
+          await captureError(error, { ...buildContext, ...sessionContext });
         }
       };
 

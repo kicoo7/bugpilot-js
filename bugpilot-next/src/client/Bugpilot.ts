@@ -14,7 +14,8 @@ import { waitUntilBugpilotAvailable } from "./utils";
 
 const BUGPILOT_HOST = "https://script.bugpilot.io";
 const BUGPILOT_SCRIPT_FILENAME = "adopto.js";
-const BUGPILOT_VERSION = process.env.BUGPILOT_VERSION;
+// this value is replaced by the post-build script
+const BUGPILOT_VERSION = "BUGPILOT_VERSION_VALUE";
 
 declare global {
   interface Window {

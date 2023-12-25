@@ -18,7 +18,7 @@ export function withBugpilotConfig(nextConfig: any) {
         newConfig.module.rules.unshift({
           test: /\.(ts|tsx)$/,
           // todo: exclude head, not_found, global-error, etc.
-          exclude: /(layout|error|global-error|not_found|middleware).tsx$/,
+          exclude: /(global-error|not_found|middleware).tsx$/,
           include: /app/,
 
           use: [
