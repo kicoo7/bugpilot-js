@@ -6,33 +6,33 @@ const t = require("@babel/types");
  * @param {string} fullPath
  * @returns
  */
-module.exports.getRelativePath = function (fullPath) {
+export function getRelativePath(fullPath: string) {
   const root = process.cwd();
   const relativePath = path.relative(root, fullPath);
   return relativePath;
-};
+}
 
 /**
  * Returns true if the React "use client" directive is present.
  * @param {string} source
  * @returns
  */
-module.exports.isClientComponent = function (source) {
+export function isClientComponent(source: string) {
   return Boolean(
     source.includes("__next_internal_client_entry_do_not_use__") ||
       source.includes("use client") ||
       source.includes("import { createProxy }")
   );
-};
+}
 
 /**
  * Returns true if the React "use server" directive is present.
  * @param {string} source
  * @returns
  */
-module.exports.containsServerActions = function (source) {
-  return Boolean(source.includes("__next_internal_action_entry_do_not_use__"));
-};
+export function containsServerActions(source) {
+  return Boolean(source.includes("createActionProxy"));
+}
 
 /**
  * IMPORTANT: We don't check for React class components.
@@ -40,14 +40,14 @@ module.exports.containsServerActions = function (source) {
  * @param {Path} path
  * @returns {boolean}
  */
-module.exports.isReactElement = function (path) {
+export function isReactElement(path) {
   let isReactElement = false;
   if (path.isFunctionDeclaration() || path.isArrowFunctionExpression()) {
     isReactElement = isReturningJSXElement(path);
   }
 
   return isReactElement;
-};
+}
 
 /**
  * Returns true if node is exported (named, not default), async, function or arrow function.
@@ -56,7 +56,7 @@ module.exports.isReactElement = function (path) {
  * @param {*} path
  * @returns {boolean}
  */
-module.exports.isServerAction = function (path) {
+export function isServerAction(path) {
   return Boolean(
     path.node.async === true &&
       ((path.isFunctionDeclaration() &&
@@ -67,7 +67,7 @@ module.exports.isServerAction = function (path) {
           path?.parentPath?.parentPath?.parentPath?.isExportNamedDeclaration())) &&
       isReturningJSXElement(path) === false
   );
-};
+}
 
 /**
  * Wraps FunctionDeclaration or ArrowFunctionExpression with a function call with context.
@@ -76,7 +76,7 @@ module.exports.isServerAction = function (path) {
  * @param {object} options - options that are passed to the wrapping function
  * @returns
  */
-module.exports.wrap = function (path, wrapFunctionName, options) {
+export function wrap(path, wrapFunctionName: string, options: {}) {
   let optionsNode = t.nullLiteral();
   // transform object to objectExpression
   if (options && typeof options === "object") {
@@ -104,7 +104,7 @@ module.exports.wrap = function (path, wrapFunctionName, options) {
       "Wrapping failed. Unsupported node type. Only arrow functions and function declarations are supported."
     );
   }
-};
+}
 
 /**
  * Helper function that returns true if node returns a JSX element.
@@ -128,13 +128,13 @@ function isReturningJSXElement(path) {
   return foundJSX;
 }
 
-function wrapArrowFunction(path, wrapFunctionName, optionsNode) {
+function wrapArrowFunction(path, wrapFunctionName: string, optionsNode) {
   return path.replaceWith(
     t.callExpression(t.identifier(wrapFunctionName), [path.node, optionsNode])
   );
 }
 
-function wrapFunctionDeclaration(path, wrapFunctionName, optionsNode) {
+function wrapFunctionDeclaration(path, wrapFunctionName: string, optionsNode) {
   const expression = t.functionExpression(
     null,
     path.node.params,

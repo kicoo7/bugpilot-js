@@ -4,7 +4,7 @@ const traverse = require("@babel/traverse").default;
 const { isReactElement } = require("./utils");
 const generate = require("@babel/generator").default;
 
-module.exports = function (source) {
+export function injectLoader(source) {
   const options = this.getOptions();
 
   // set of bugpilot functions that we need to import
@@ -67,4 +67,4 @@ module.exports = function (source) {
   const output = generate(ast);
   console.log("inject output: \n", output.code);
   return output.code;
-};
+}

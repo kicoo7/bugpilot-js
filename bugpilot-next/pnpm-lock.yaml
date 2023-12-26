@@ -20,6 +20,9 @@ dependencies:
   '@babel/types':
     specifier: ^7.23.6
     version: 7.23.6
+  '@types/babel-types':
+    specifier: ^7.0.15
+    version: 7.0.15
   '@types/react':
     specifier: ^18.2.45
     version: 18.2.45
@@ -369,6 +372,10 @@ packages:
     resolution: {integrity: sha512-E4KcWTpoLHqwPHLxidpOqQbcrZVgi0rsmmZXUle1jXmJfuIf/UWpczUJ7MZZ5tlxytgJXyp0w4PGkkeLiuIdZw==}
     dependencies:
       tslib: 2.6.2
+    dev: false
+
+  /@types/babel-types@7.0.15:
+    resolution: {integrity: sha512-JUgfZHUOMbtjopxiOQaaF+Uovk5wpDqpXR+XLWiOivCWSy1FccO30lvNNpCt8geFwq8VmGT2y9OMkOpA0g5O5g==}
     dev: false
 
   /@types/eslint-scope@3.7.7:

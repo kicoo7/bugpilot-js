@@ -12,7 +12,7 @@ const {
 
 const generate = require("@babel/generator").default;
 
-module.exports = function (source) {
+export default function wrappingLoader(source: string) {
   // ignore client components as they are handled by BugpilotErrorPage
   if (isClientComponent(source)) {
     return source;
@@ -24,13 +24,13 @@ module.exports = function (source) {
   const hasServerActions = containsServerActions(source);
   // set of bugpilot functions that we need to import
   const imports = new Set();
-  const filePath = getRelativePath(this.resourcePath);
+
   const buildContext = {
-    buildId: options?.buildId,
+    buildId: String(options?.buildId),
     dev: String(options?.dev),
-    nextRuntime: options?.nextRuntime,
-    filePath,
-    kind: options?.kind,
+    nextRuntime: String(options?.nextRuntime),
+    filePath: getRelativePath(this.resourcePath),
+    kind: String(options?.kind),
   };
 
   const ast = babelParser.parse(source, {
@@ -60,7 +60,7 @@ module.exports = function (source) {
         hasServerActions &&
         isServerAction(path)
       ) {
-        // TO IMPROVE: createActionProxy("c538c6d28b8b44073f15e022c4a964393ada4eeb", null, inlineServerActionC, $$ACTION_2);
+        // TO IMPROVE: inline server actions have names like $$ACTION_0, $$ACTION_1, etc.
         imports.add("wrapServerAction");
         wrap(path, "wrapServerAction", buildContext);
         path.skip();
@@ -81,4 +81,4 @@ module.exports = function (source) {
   const output = generate(ast);
   console.log("output: \n", output.code);
   return output.code;
-};
+}
