@@ -26,7 +26,31 @@ export async function captureError(
   try {
     const DEV_MODE = context?.url?.includes("localhost") || "0";
 
-    console.log("context", JSON.stringify(context, null, 2));
+    const body = JSON.stringify({
+      error: {
+        type: "error-click",
+        jsErrors: [
+          {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            digest: error?.digest,
+            filePath: context?.filePath,
+            functionName: context?.functionName,
+          },
+        ],
+      },
+      // build: context?.buildId,
+      // nextRuntime: context?.nextRuntime,
+      workspaceId: context?.workspaceId,
+      userId: context?.anonymousId,
+      reportId: context?.reportId,
+      timestamp: Date.now(),
+      url: context?.url,
+      kind: context?.kind,
+    });
+
+    console.log("body", body);
 
     const response = await fetch(`https://events-error.bugpilot.io/error`, {
       method: "POST",
@@ -35,29 +59,7 @@ export async function captureError(
         "Content-Type": "application/json",
         "X-Dev-Mode": DEV_MODE === true ? "1" : "0",
       },
-      body: JSON.stringify({
-        error: {
-          type: "error-click",
-          jsErrors: [
-            {
-              message: error.message,
-              stack: error.stack,
-              name: error.name,
-              digest: error?.digest,
-              filePath: context?.filePath,
-              functionName: context?.functionName,
-            },
-          ],
-        },
-        build: context?.buildId,
-        nextRuntime: context?.nextRuntime,
-        workspaceId: context?.workspaceId,
-        userId: context?.anonymousId,
-        reportId: context?.reportId,
-        timestamp: Date.now(),
-        url: context?.url,
-        kind: context?.kind,
-      }),
+      body,
     });
 
     if (response.ok === true) {

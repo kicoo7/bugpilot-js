@@ -1,6 +1,6 @@
 import { captureError } from "../core";
 import { getSessionContextAsync } from "../context/getSessionContextServer";
-import { isNotFoundError, isRedirectError } from "./utils";
+import { isBuildPhase, isNotFoundError, isRedirectError } from "./utils";
 
 export function wrapServerComponent(
   serverComponent: () => {},
@@ -11,8 +11,12 @@ export function wrapServerComponent(
       let maybePromiseResult;
 
       const handleErrorCase = async (error: Error) => {
-        // skip 404 and redirect NEXT errors
-        if (!isNotFoundError(error) && !isRedirectError(error)) {
+        // skip 404 and redirect NEXT errors. We also skip errors that are thrown during the build phase.
+        if (
+          !isNotFoundError(error) &&
+          !isRedirectError(error) &&
+          !isBuildPhase()
+        ) {
           const sessionContext = await getSessionContextAsync();
           await captureError(error, { ...buildContext, ...sessionContext });
         }
