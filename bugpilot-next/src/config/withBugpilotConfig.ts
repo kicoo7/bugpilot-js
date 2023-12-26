@@ -27,6 +27,7 @@ export function withBugpilotConfig(nextConfig: any) {
                 dev,
                 nextRuntime,
                 kind: "page-component",
+                // workspaceId:
               },
             },
           ],
@@ -45,6 +46,7 @@ export function withBugpilotConfig(nextConfig: any) {
                 dev,
                 nextRuntime,
                 kind: "server-component",
+                // workspaceId:
               },
             },
           ],
@@ -63,6 +65,7 @@ export function withBugpilotConfig(nextConfig: any) {
                 dev,
                 nextRuntime,
                 kind: "server-action",
+                // workspaceId:
               },
             },
           ],
@@ -77,6 +80,7 @@ export function withBugpilotConfig(nextConfig: any) {
               loader: path.resolve(__dirname, "injectLoader.js"),
               options: {
                 injectKind: "bugpilot",
+                // workspaceId:
               },
             },
           ],

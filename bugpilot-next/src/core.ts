@@ -50,8 +50,6 @@ export async function captureError(
       kind: context?.kind,
     });
 
-    console.log("body", body);
-
     const response = await fetch(`https://events-error.bugpilot.io/error`, {
       method: "POST",
       headers: {
@@ -61,6 +59,8 @@ export async function captureError(
       },
       body,
     });
+
+    console.log("context", context, response);
 
     if (response.ok === true) {
       logger.debug("Bugpilot.captureError: error sent successfully");

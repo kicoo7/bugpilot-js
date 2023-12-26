@@ -65,6 +65,5 @@ export default function injectLoader(source) {
   }
 
   const output = generate(ast);
-  console.log("inject output: \n", output.code);
   return output.code;
 }

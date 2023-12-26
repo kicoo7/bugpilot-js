@@ -79,6 +79,5 @@ export default function wrappingLoader(source: string) {
   }
 
   const output = generate(ast);
-  console.log("output: \n", output.code);
   return output.code;
 }
