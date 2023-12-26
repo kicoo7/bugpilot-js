@@ -4,7 +4,7 @@ const traverse = require("@babel/traverse").default;
 const { isReactElement } = require("./utils");
 const generate = require("@babel/generator").default;
 
-export function injectLoader(source) {
+export default function injectLoader(source) {
   const options = this.getOptions();
 
   // set of bugpilot functions that we need to import
