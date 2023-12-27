@@ -19,7 +19,7 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
             version: 8
-      - run: pnpm clean && pnpm install && pnpm build
+      - run: pnpm install && pnpm build
 
   publish-npm:
     needs: build
@@ -34,12 +34,6 @@ jobs:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
           scope: '@kicoo7'
-      - uses: pnpm/action-setup@v2
-        with:
-            version: 8
-            run_install: |
-              - recursive: true
-                args: [--frozen-lockfile, --strict-peer-dependencies]
       - run: npx lerna publish --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
