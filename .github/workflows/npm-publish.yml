@@ -22,7 +22,7 @@ jobs:
             run_install: |
               - recursive: true
                 args: [--frozen-lockfile, --strict-peer-dependencies]
-      - run: pnpm install && pnpm build
+      - run: pnpm clean && pnpm install && pnpm build
 
   publish-npm:
     needs: build

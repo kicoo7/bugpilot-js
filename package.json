@@ -11,6 +11,7 @@
   "version": "0.0.0",
   "scripts":{
     "build": "lerna run build",
-    "release": "lerna run publish"
+    "release": "lerna run publish",
+    "clean": "lerna run clean && rm -rf dist && rm -rf node_modules && pnpm store prune"
   }
 }
