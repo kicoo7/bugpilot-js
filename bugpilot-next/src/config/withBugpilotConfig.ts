@@ -6,6 +6,10 @@ export function withBugpilotConfig(
   nextConfig: NextConfig,
   bugpilotConfig: any
 ) {
+  if (!bugpilotConfig?.workspaceId) {
+    throw new Error("Bugpilot: workspaceId is required");
+  }
+
   return {
     ...nextConfig,
     webpack: (
