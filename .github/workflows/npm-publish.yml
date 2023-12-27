@@ -37,6 +37,6 @@ jobs:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
           scope: '@kicoo7'
-      - run: npx lerna publish --conventional-commits --yes
+      - run: pnpm release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
