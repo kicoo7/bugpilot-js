@@ -27,10 +27,9 @@ export function getSessionContext() {
     };
   } catch (error) {
     logger.error(
-      "Bugpilot.getClientContext: error while getting context",
+      "Bugpilot.getSessionContext: error while getting session context. Returning empty object",
       error
     );
-    logger.error("Bugpilot.getClientContext: returning empty context");
   }
 
   return context;

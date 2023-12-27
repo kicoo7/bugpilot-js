@@ -40,8 +40,8 @@ export async function captureError(
           },
         ],
       },
-      // build: context?.buildId,
-      // nextRuntime: context?.nextRuntime,
+      build: context?.buildId,
+      nextRuntime: context?.nextRuntime,
       workspaceId: context?.workspaceId,
       userId: context?.anonymousId,
       reportId: context?.reportId,
@@ -59,8 +59,6 @@ export async function captureError(
       },
       body,
     });
-
-    console.log("context", context, response);
 
     if (response.ok === true) {
       logger.debug("Bugpilot.captureError: error sent successfully");

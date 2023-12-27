@@ -1,6 +1,11 @@
+import { NextConfig } from "next/types";
+
 const path = require("path");
 
-export function withBugpilotConfig(nextConfig: any) {
+export function withBugpilotConfig(
+  nextConfig: NextConfig,
+  bugpilotConfig: any
+) {
   return {
     ...nextConfig,
     webpack: (
@@ -27,7 +32,7 @@ export function withBugpilotConfig(nextConfig: any) {
                 dev,
                 nextRuntime,
                 kind: "page-component",
-                // workspaceId:
+                workspaceId: bugpilotConfig?.workspaceId,
               },
             },
           ],
@@ -46,7 +51,7 @@ export function withBugpilotConfig(nextConfig: any) {
                 dev,
                 nextRuntime,
                 kind: "server-component",
-                // workspaceId:
+                workspaceId: bugpilotConfig?.workspaceId,
               },
             },
           ],
@@ -65,7 +70,7 @@ export function withBugpilotConfig(nextConfig: any) {
                 dev,
                 nextRuntime,
                 kind: "server-action",
-                // workspaceId:
+                workspaceId: bugpilotConfig?.workspaceId,
               },
             },
           ],
@@ -80,7 +85,7 @@ export function withBugpilotConfig(nextConfig: any) {
               loader: path.resolve(__dirname, "injectLoader.js"),
               options: {
                 injectKind: "bugpilot",
-                // workspaceId:
+                workspaceId: bugpilotConfig?.workspaceId,
               },
             },
           ],

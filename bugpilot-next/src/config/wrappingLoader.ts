@@ -31,6 +31,7 @@ export default function wrappingLoader(source: string) {
     nextRuntime: String(options?.nextRuntime),
     filePath: getRelativePath(this.resourcePath),
     kind: String(options?.kind),
+    workspaceId: String(options?.workspaceId),
   };
 
   const ast = babelParser.parse(source, {

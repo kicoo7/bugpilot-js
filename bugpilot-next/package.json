@@ -1,12 +1,9 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.1.12",
+  "version": "2.1.14",
   "description": "Bugpilot bindings for Next.js",
   "main": "./dist/index.js",
-  "bin": {
-    "install": "./bin.js"
-  },
   "scripts": {
     "test": "exit 0",
     "release": "npm publish --access public",
@@ -21,7 +18,7 @@
     "bug",
     "bugpilot"
   ],
-  "author": "Krste Rajchevski <rajchevski.krste@live.com>",
+  "author": "Bugpilot",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kicoo7/bugpilot-js-v2/issues"

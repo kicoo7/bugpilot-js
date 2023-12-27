@@ -12,12 +12,15 @@ export function wrapServerAction(
     } catch (error) {
       // skip 404 and redirect NEXT errors. We also skip errors that are thrown during the build phase.
       if (
-        !isNotFoundError(error) &&
-        !isRedirectError(error) &&
+        !isNotFoundError(error as Error & { digest?: string }) &&
+        !isRedirectError(error as Error & { digest?: string }) &&
         !isBuildPhase()
       ) {
         const sessionContext = await getSessionContextAsync();
-        await captureError(error, { ...buildContext, ...sessionContext });
+        await captureError(error as Error & { digest?: string }, {
+          ...buildContext,
+          ...sessionContext,
+        });
       }
 
       throw error;

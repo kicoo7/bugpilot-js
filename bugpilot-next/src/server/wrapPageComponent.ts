@@ -7,7 +7,7 @@ export function wrapPageComponent(pageComponent: () => {}, buildContext: any) {
     apply: (originalFunction: () => {}, thisArg: any, args: any) => {
       let maybePromiseResult;
 
-      const handleErrorCase = async (error: Error) => {
+      const handleErrorCase = async (error: Error & { digest?: string }) => {
         // skip 404 and redirect NEXT errors. We also skip errors that are thrown during the build phase.
         if (
           !isNotFoundError(error) &&
@@ -22,7 +22,7 @@ export function wrapPageComponent(pageComponent: () => {}, buildContext: any) {
       try {
         maybePromiseResult = originalFunction.apply(thisArg, args);
       } catch (e) {
-        handleErrorCase(e);
+        handleErrorCase(e as Error & { digest?: string });
         throw e;
       }
 
@@ -34,7 +34,7 @@ export function wrapPageComponent(pageComponent: () => {}, buildContext: any) {
         Promise.resolve(maybePromiseResult).then(
           () => {},
           (e) => {
-            handleErrorCase(e);
+            handleErrorCase(e as Error & { digest?: string });
           }
         );
         // It is very important that we return the original promise here, because Next.js attaches various properties

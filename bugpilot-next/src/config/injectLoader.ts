@@ -23,8 +23,7 @@ export default function injectLoader(source) {
           t.objectExpression([
             t.objectProperty(
               t.stringLiteral("workspaceId"),
-              // todo: add correct workspaceId
-              t.stringLiteral("123")
+              t.stringLiteral(options?.workspaceId)
             ),
           ]),
         ]);
