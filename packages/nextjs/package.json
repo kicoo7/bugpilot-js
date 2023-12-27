@@ -1,13 +1,12 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.1.17",
+  "version": "2.1.19",
   "description": "Bugpilot bindings for Next.js",
   "main": "./dist/index.js",
   "scripts": {
     "test": "exit 0",
-    "build": "tsc && node post-build.js",
-    "build:prod": "pnpm prune && pnpm build"
+    "build": "tsc && node post-build.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/kicoo7/bugpilot-js-v2/issues"
   },
-  "homepage": "https://github.com/kicoo7/bugpilot-js-v2#readme",
+  "homepage": "https://github.com/kicoo7/bugpilot-js-v2/tree/master/packages/nextjs#readme",
   "peerDependencies": {
     "next": "^14.0.4",
     "react": "^18.2.0"
@@ -38,12 +37,14 @@
     "@babel/parser": "^7.23.6",
     "@babel/traverse": "^7.23.6",
     "@babel/types": "^7.23.6",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
     "@types/babel-types": "^7.0.15",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-    "@types/webpack": "^5.28.5",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.3.3"
+    "@types/webpack": "^5.28.5"
   },
   "directories": {
     "test": "tests"
