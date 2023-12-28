@@ -22,8 +22,8 @@ jobs:
       - run: pnpm install && pnpm build
       - uses: actions/upload-artifact@v3
         with:
-          name: dist
-          path: dist/
+          name: build-artifacts
+          path: packages/*/dist/
 
   publish-npm:
     needs: build
@@ -43,8 +43,7 @@ jobs:
           scope: '@kicoo7'
       - uses: actions/download-artifact@v3
         with:
-          name: dist
-          path: dist/
+          name: build-artifacts
       - run: pnpm release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
