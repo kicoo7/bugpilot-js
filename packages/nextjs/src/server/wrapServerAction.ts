@@ -8,7 +8,8 @@ export function wrapServerAction(
 ) {
   return async (...args: [any]) => {
     try {
-      await fun(...args);
+      const result = await fun(...args);
+      return result;
     } catch (error) {
       // skip 404 and redirect NEXT errors. We also skip errors that are thrown during the build phase.
       if (
