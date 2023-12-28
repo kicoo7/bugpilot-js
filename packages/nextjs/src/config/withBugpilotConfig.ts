@@ -64,6 +64,7 @@ export function withBugpilotConfig(
         newConfig.module.rules.unshift({
           test: /\.(ts|tsx)$/,
           exclude: /(layout|error|global-error|not_found|middleware).tsx$/,
+          include: /app/,
           use: [
             {
               loader: path.resolve(__dirname, "wrappingLoader.js"),
