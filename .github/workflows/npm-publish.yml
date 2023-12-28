@@ -20,6 +20,10 @@ jobs:
         with:
             version: 8
       - run: pnpm install && pnpm build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
 
   publish-npm:
     needs: build
@@ -37,6 +41,10 @@ jobs:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
           scope: '@kicoo7'
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist/
       - run: pnpm release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
