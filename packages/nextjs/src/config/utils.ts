@@ -70,6 +70,19 @@ export function isServerAction(path) {
 }
 
 /**
+ * Returns true if node is exported (named, not default), function declaration and has the name "middleware".
+ * @param {*} path
+ * @returns {boolean}
+ */
+export function isMiddleware(path) {
+  return Boolean(
+    path.isFunctionDeclaration() &&
+      path?.parentPath?.isExportNamedDeclaration() &&
+      path?.node.id?.name === "middleware"
+  );
+}
+
+/**
  * Wraps FunctionDeclaration or ArrowFunctionExpression with a function call with context.
  * @param {*} path - path to FunctionDeclaration or ArrowFunctionExpression
  * @param {string} wrapFunctionName - name of the wrapping function. Needs to be imported in the file.

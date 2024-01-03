@@ -7,6 +7,7 @@ const {
   isClientComponent,
   isReactElement,
   isServerAction,
+  isMiddleware,
   wrap,
 } = require("./utils");
 
@@ -64,6 +65,10 @@ export default function wrappingLoader(source: string) {
         // TO IMPROVE: inline server actions have names like $$ACTION_0, $$ACTION_1, etc.
         imports.add("wrapServerAction");
         wrap(path, "wrapServerAction", buildContext);
+        path.skip();
+      } else if (buildContext?.kind === "middleware" && isMiddleware(path)) {
+        imports.add("wrapMiddleware");
+        wrap(path, "wrapMiddleware", buildContext);
         path.skip();
       }
     },

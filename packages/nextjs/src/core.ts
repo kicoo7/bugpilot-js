@@ -60,6 +60,8 @@ export async function captureError(
       body,
     });
 
+    console.log("context", context);
+
     if (response.ok === true) {
       logger.debug("Bugpilot.captureError: error sent successfully");
       return;
@@ -69,6 +71,7 @@ export async function captureError(
     }
   } catch (error) {
     logger.error("Bugpilot.captureError: error failed to send", error);
+    // TODO: report an error that Bugpilot failed.
   }
 }
 

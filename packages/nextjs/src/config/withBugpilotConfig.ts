@@ -18,7 +18,7 @@ export function withBugpilotConfig(
     ) => {
       const newConfig = { ...config };
 
-      if (isServer === true && nextRuntime === "nodejs") {
+      if (isServer === true) {
         newConfig.module = {
           ...newConfig.module,
           rules: [...(newConfig.module?.rules || [])],
@@ -93,6 +93,24 @@ export function withBugpilotConfig(
             },
           ],
         });
+        if (nextRuntime === "edge") {
+          // Wrap middleware
+          newConfig.module.rules.unshift({
+            test: /middleware.ts$/,
+            use: [
+              {
+                loader: path.resolve(__dirname, "wrappingLoader.js"),
+                options: {
+                  buildId,
+                  dev,
+                  nextRuntime,
+                  kind: "middleware",
+                  workspaceId: bugpilotConfig?.workspaceId,
+                },
+              },
+            ],
+          });
+        }
       }
 
       return newConfig;
