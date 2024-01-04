@@ -1,10 +1,14 @@
-import { getSessionContextAsync } from "../context/getSessionContextServer";
 import { captureError } from "../core";
+import { getSessionContextAsync } from "../context/getSessionContextServer";
 import { isBuildPhase, isNotFoundError, isRedirectError } from "./utils";
+import { BugpilotBuildContext } from "../types";
 
-export function wrapMiddleware(middleware: () => {}, buildContext: any) {
+export function wrapMiddleware(
+  middleware: () => {},
+  buildContext: BugpilotBuildContext
+) {
   return new Proxy(middleware, {
-    apply: (wrappingTarget, thisArg, args) => {
+    apply: (wrappingTarget: () => {}, thisArg: any, args: any) => {
       let maybePromiseResult;
 
       const handleErrorCase = async (error: Error & { digest?: string }) => {

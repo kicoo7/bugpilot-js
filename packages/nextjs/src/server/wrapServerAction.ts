@@ -1,10 +1,11 @@
 import { captureError } from "../core";
 import { getSessionContextAsync } from "../context/getSessionContextServer";
 import { isBuildPhase, isNotFoundError, isRedirectError } from "./utils";
+import { BugpilotBuildContext } from "../types";
 
 export function wrapServerAction(
   fun: (args: [any]) => Promise<void>,
-  buildContext: any
+  buildContext: BugpilotBuildContext
 ) {
   return async (...args: [any]) => {
     try {

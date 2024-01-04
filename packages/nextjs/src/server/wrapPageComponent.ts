@@ -1,8 +1,12 @@
 import { captureError } from "../core";
 import { getSessionContextAsync } from "../context/getSessionContextServer";
 import { isBuildPhase, isNotFoundError, isRedirectError } from "./utils";
+import { BugpilotBuildContext } from "../types";
 
-export function wrapPageComponent(pageComponent: () => {}, buildContext: any) {
+export function wrapPageComponent(
+  pageComponent: () => {},
+  buildContext: BugpilotBuildContext
+) {
   return new Proxy(pageComponent, {
     apply: (originalFunction: () => {}, thisArg: any, args: any) => {
       let maybePromiseResult;

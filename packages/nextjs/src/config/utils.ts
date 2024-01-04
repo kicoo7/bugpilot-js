@@ -95,7 +95,6 @@ export function wrap(path, wrapFunctionName: string, options: {}) {
   if (options && typeof options === "object") {
     options = {
       ...options,
-      // add the name of the function or the variable in case it's an arrow function
       functionName:
         path?.node?.id?.name || path?.parentPath?.node?.id?.name || "unknown",
     };

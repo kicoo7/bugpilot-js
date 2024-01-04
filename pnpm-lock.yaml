@@ -50,10 +50,16 @@ importers:
       ts-loader:
         specifier: ^9.5.1
         version: 9.5.1(typescript@5.3.3)(webpack@5.89.0)
+      tslib:
+        specifier: ^2.6.2
+        version: 2.6.2
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
     devDependencies:
+      '@types/babel-traverse':
+        specifier: ^6.25.10
+        version: 6.25.10
       '@types/babel-types':
         specifier: ^7.0.15
         version: 7.0.15
@@ -1008,6 +1014,12 @@ packages:
     dependencies:
       '@tufjs/canonical-json': 2.0.0
       minimatch: 9.0.3
+    dev: true
+
+  /@types/babel-traverse@6.25.10:
+    resolution: {integrity: sha512-B3XitTFG8YeXb5lr7Nj62t1DikCDuAJ/4BDeK6GCuWREEmdunI9DWnv+81oHl2yQBQPWY/C1PmV3vaRZB4LQmw==}
+    dependencies:
+      '@types/babel-types': 7.0.15
     dev: true
 
   /@types/babel-types@7.0.15:

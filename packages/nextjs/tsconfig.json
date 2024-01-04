@@ -12,7 +12,14 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "strict": true,
+    "alwaysStrict": false,
+    "noErrorTruncation": true,
+    "importHelpers": true,
+    "downlevelIteration": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true
   },
   "include": [
     "src/**/*"

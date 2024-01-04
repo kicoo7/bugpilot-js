@@ -1,7 +1,7 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.1.35",
+  "version": "2.1.36",
   "description": "Bugpilot bindings for Next.js",
   "main": "./dist/index.js",
   "scripts": {
@@ -40,9 +40,11 @@
     "@babel/traverse": "^7.23.6",
     "@babel/types": "^7.23.6",
     "ts-loader": "^9.5.1",
+    "tslib": "^2.6.2",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@types/babel-traverse": "^6.25.10",
     "@types/babel-types": "^7.0.15",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",

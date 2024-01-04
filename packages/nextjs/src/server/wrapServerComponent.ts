@@ -1,13 +1,14 @@
 import { captureError } from "../core";
 import { getSessionContextAsync } from "../context/getSessionContextServer";
 import { isBuildPhase, isNotFoundError, isRedirectError } from "./utils";
+import { BugpilotBuildContext } from "../types";
 
 export function wrapServerComponent(
   serverComponent: () => {},
-  buildContext: any
+  buildContext: BugpilotBuildContext
 ) {
   return new Proxy(serverComponent, {
-    apply: (originalFunction, thisArg, args) => {
+    apply: (originalFunction: () => {}, thisArg: any, args: any) => {
       let maybePromiseResult;
 
       const handleErrorCase = async (error: Error & { digest?: string }) => {
@@ -25,7 +26,7 @@ export function wrapServerComponent(
       try {
         maybePromiseResult = originalFunction.apply(thisArg, args);
       } catch (e) {
-        handleErrorCase(e);
+        handleErrorCase(e as Error & { digest?: string });
         throw e;
       }
 

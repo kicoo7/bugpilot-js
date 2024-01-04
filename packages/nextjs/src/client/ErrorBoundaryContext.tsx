@@ -1,2 +1,6 @@
 import { createContext } from "react";
-export const ErrorBoundaryContext = createContext(null);
+export const ErrorBoundaryContext = createContext({
+  error: null,
+  resetErrorBoundary: () => {},
+  didCatch: false,
+});

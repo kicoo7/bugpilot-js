@@ -1,3 +1,5 @@
+import { LoaderContext } from "webpack";
+
 const babelParser = require("@babel/parser");
 const t = require("@babel/types");
 const traverse = require("@babel/traverse").default;
@@ -13,7 +15,10 @@ const {
 
 const generate = require("@babel/generator").default;
 
-export default function wrappingLoader(source: string) {
+export default function wrappingLoader(
+  this: LoaderContext<any>,
+  source: string
+) {
   // ignore client components as they are handled by BugpilotErrorPage
   if (isClientComponent(source)) {
     return source;
