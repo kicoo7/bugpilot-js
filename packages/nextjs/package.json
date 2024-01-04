@@ -1,7 +1,7 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.1.36",
+  "version": "2.1.37",
   "description": "Bugpilot bindings for Next.js",
   "main": "./dist/index.js",
   "scripts": {
@@ -26,8 +26,9 @@
   },
   "homepage": "https://github.com/kicoo7/bugpilot-js-v2/tree/master/packages/nextjs#readme",
   "peerDependencies": {
-    "next": "^14.0.4",
-    "react": "^18.2.0"
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "files": [
     "dist/**/*"

@@ -1,7 +1,7 @@
 import { captureError } from "../core";
-import { getSessionContextAsync } from "../context/getSessionContextServer";
 import { isBuildPhase, isNotFoundError, isRedirectError } from "./utils";
 import { BugpilotBuildContext } from "../types";
+import { getSessionContext } from "../context/getSessionContext";
 
 export function wrapMiddleware(
   middleware: () => {},
@@ -18,7 +18,7 @@ export function wrapMiddleware(
           !isRedirectError(error) &&
           !isBuildPhase()
         ) {
-          const sessionContext = await getSessionContextAsync();
+          const sessionContext = getSessionContext();
           await captureError(error, { ...buildContext, ...sessionContext });
         }
       };

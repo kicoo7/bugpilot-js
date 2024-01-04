@@ -9,7 +9,7 @@ import {
 import { ErrorBoundaryContext } from "./ErrorBoundaryContext";
 import { FallbackComponent as BugpilotFallbackComponent } from "./ui/FallbackComponent";
 import { captureError } from "../core";
-import { getSessionContext } from "../context/getSessionContextClient";
+import { getSessionContext } from "../context/getSessionContext";
 import { hasArrayChanged } from "./utils";
 
 type FallbackProps = {
@@ -154,8 +154,8 @@ export function BugpilotErrorBoundary({
   description = "We couldn't load your component at this time. Please try again.",
 }: BugpilotErrorBoundaryProps) {
   function onError(error: Error) {
-    const context = getSessionContext();
-    captureError(error, { ...context, kind: "error-boundary" });
+    const sessionContext = getSessionContext();
+    captureError(error, { ...sessionContext, kind: "error-boundary" });
   }
 
   return (

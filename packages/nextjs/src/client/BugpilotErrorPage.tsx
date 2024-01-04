@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { FallbackDialog } from "./ui/FallbackDialog";
 import { captureError } from "../core";
 import { useBugpilot } from "./Bugpilot";
-import { getSessionContext } from "../context/getSessionContextClient";
+import { getSessionContext } from "../context/getSessionContext";
 
 export function BugpilotErrorPage({
   error,
@@ -14,8 +14,8 @@ export function BugpilotErrorPage({
 }) {
   const { saveBugReport } = useBugpilot();
   useEffect(() => {
-    const context = getSessionContext();
-    captureError(error, { ...context, kind: "error-page" });
+    const sessionContext = getSessionContext();
+    captureError(error, { ...sessionContext, kind: "error-page" });
     saveBugReport({ triggerType: "error-page" });
   }, []);
 

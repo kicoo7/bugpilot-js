@@ -5,7 +5,7 @@ export async function captureError(
   context: any = {}
 ) {
   if (error instanceof Error === false) {
-    logger.error(
+    logger.warn(
       "Bugpilot.captureError: error must be of type Error. Got: ",
       error
     );
@@ -19,7 +19,7 @@ export async function captureError(
       "The specific message is omitted in production builds to avoid leaking sensitive details."
     )
   ) {
-    logger.warn("Bugpilot.captureError: error is a Next.js server error");
+    // logger.warn("Bugpilot.captureError: error is a Next.js server error");
     return;
   }
 
@@ -59,8 +59,6 @@ export async function captureError(
       },
       body,
     });
-
-    console.log("context", context);
 
     if (response.ok === true) {
       logger.debug("Bugpilot.captureError: error sent successfully");
