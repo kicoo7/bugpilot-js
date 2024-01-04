@@ -1,4 +1,5 @@
 import { NextConfig } from "next/types";
+import logger from "../logger";
 
 const path = require("path");
 
@@ -17,6 +18,11 @@ export function withBugpilotConfig(
       { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
     ) => {
       const newConfig = { ...config };
+
+      if (dev === true) {
+        logger.info("Bugpilot only works in production mode.");
+        return newConfig;
+      }
 
       if (isServer === true) {
         newConfig.module = {
