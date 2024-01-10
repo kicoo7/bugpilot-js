@@ -3,6 +3,10 @@ import logger from "../logger";
 
 const path = require("path");
 
+// We don't want to log the same message three times because webpack runs three times for each environment server, edge, and client.
+let loggedDebugModeMessage = false;
+let loggedDevModeMessage = false;
+
 export function withBugpilotConfig(
   nextConfig: NextConfig,
   bugpilotConfig: any
@@ -23,13 +27,19 @@ export function withBugpilotConfig(
       const newConfig = { ...config };
 
       if (dev === true) {
-        logger.info("Bugpilot only works in production mode.");
+        if (loggedDevModeMessage === false) {
+          logger.info("Bugpilot only works in production mode.");
+          loggedDevModeMessage = true;
+        }
         return newConfig;
       }
 
       if (bugpilotConfig?.debug === true) {
         logger.setDebug(true);
-        logger.debug("Bugpilot: debug mode enabled");
+        if (loggedDebugModeMessage === false) {
+          logger.debug("Bugpilot debug mode enabled.");
+          loggedDebugModeMessage = true;
+        }
       }
 
       if (isServer === true) {
