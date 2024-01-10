@@ -7,10 +7,11 @@ export async function captureError(
   const DEV_MODE =
     context?.dev === "true" || context?.url?.includes("localhost") || "0";
 
-  if (DEV_MODE === true) {
-    logger.info("Bugpilot.captureError: errors in dev mode are not captured.");
-    return;
-  }
+  logger.debug(
+    "Bugpilot.captureError called with error and context: ",
+    error,
+    context
+  );
 
   if (error instanceof Error === false) {
     logger.debug(
@@ -55,6 +56,13 @@ export async function captureError(
       url: context?.url,
       kind: context?.kind,
     });
+
+    logger.debug("Bugpilot.captureError: error \n", body);
+
+    if (DEV_MODE === true) {
+      logger.info("Errors are not captured in dev mode.");
+      return;
+    }
 
     const response = await fetch(`https://events-error.bugpilot.io/error`, {
       method: "POST",
