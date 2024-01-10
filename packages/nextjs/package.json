@@ -1,7 +1,7 @@
 {
   "name": "@kicoo7/next-v2",
   "private": false,
-  "version": "2.1.41",
+  "version": "2.1.42",
   "description": "Bugpilot bindings for Next.js",
   "main": "./dist/index.js",
   "scripts": {
@@ -50,8 +50,5 @@
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@types/webpack": "^5.28.5"
-  },
-  "directories": {
-    "test": "tests"
   }
 }

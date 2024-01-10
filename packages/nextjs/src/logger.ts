@@ -5,9 +5,8 @@ const BANNER = (level = "debug") => [
   "color:#6060ff;",
 ];
 
-let debugMode = false;
-
 const logger = {
+  debugMode: false,
   info(...args: any[]) {
     console.log(...BANNER("info"), ...args);
   },
@@ -18,12 +17,14 @@ const logger = {
     console.error(...BANNER("error"), ...args);
   },
   debug(...args: any[]) {
-    if (debugMode === true) {
+    console.log("debug: this.debugMode", this.debugMode);
+    if (this.debugMode === true) {
       console.debug(...BANNER("debug"), ...args);
     }
   },
   setDebug(value: boolean) {
-    debugMode = value;
+    this.debugMode = value;
+    console.log("this", this.debugMode);
   },
 };
 
