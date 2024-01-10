@@ -13,11 +13,11 @@ export async function captureError(
   }
 
   if (error instanceof Error === false) {
-    logger.warn(
+    logger.debug(
       "Bugpilot.captureError: error must be of type Error. Got: ",
       error
     );
-    logger.warn("Bugpilot.captureError: error is not captured.");
+    logger.debug("Bugpilot.captureError: error is not captured.");
     return;
   }
 
@@ -27,7 +27,7 @@ export async function captureError(
       "The specific message is omitted in production builds to avoid leaking sensitive details."
     )
   ) {
-    // logger.warn("Bugpilot.captureError: error is a Next.js server error");
+    logger.debug("Bugpilot.captureError: error is a Next.js server error");
     return;
   }
 
@@ -71,11 +71,11 @@ export async function captureError(
       return;
     } else {
       const result = await response.json();
-      logger.error("Bugpilot.captureError: error failed to send", result);
+      logger.debug("Bugpilot.captureError: error failed to send", result);
       // TODO: report an error that Bugpilot failed.
     }
   } catch (error) {
-    logger.error("Bugpilot.captureError: error failed to send", error);
+    logger.debug("Bugpilot.captureError: error failed to send", error);
     // TODO: report an error that Bugpilot failed.
   }
 }

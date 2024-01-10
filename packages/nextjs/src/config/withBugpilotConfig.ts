@@ -11,8 +11,11 @@ export function withBugpilotConfig(
     throw new Error("Bugpilot: workspaceId is required");
   }
 
+  // overwrite any nextConfig properties from bugpilot.config.js
+  const newNextConfig = { ...nextConfig, ...bugpilotConfig.next };
+
   return {
-    ...nextConfig,
+    ...newNextConfig,
     webpack: (
       config,
       { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
@@ -22,6 +25,11 @@ export function withBugpilotConfig(
       if (dev === true) {
         logger.info("Bugpilot only works in production mode.");
         return newConfig;
+      }
+
+      if (bugpilotConfig?.debug === true) {
+        logger.setDebug(true);
+        logger.debug("Bugpilot: debug mode enabled");
       }
 
       if (isServer === true) {

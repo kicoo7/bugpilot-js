@@ -5,18 +5,25 @@ const BANNER = (level = "debug") => [
   "color:#6060ff;",
 ];
 
+let debugMode = false;
+
 const logger = {
-  info: (...args) => {
+  info(...args: any[]) {
     console.log(...BANNER("info"), ...args);
   },
-  warn: (...args) => {
+  warn(...args: any[]) {
     console.warn(...BANNER("warn"), ...args);
   },
-  error: (...args) => {
+  error(...args: any[]) {
     console.error(...BANNER("error"), ...args);
   },
-  debug: (...args) => {
-    console.debug(...BANNER("debug"), ...args);
+  debug(...args: any[]) {
+    if (debugMode === true) {
+      console.debug(...BANNER("debug"), ...args);
+    }
+  },
+  setDebug(value: boolean) {
+    debugMode = value;
   },
 };
 
