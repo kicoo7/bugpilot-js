@@ -4,12 +4,20 @@ export async function captureError(
   error: Error & { digest?: string },
   context: any = {}
 ) {
+  const DEV_MODE =
+    context?.dev === "true" || context?.url?.includes("localhost") || "0";
+
+  if (DEV_MODE === true) {
+    logger.info("Bugpilot.captureError: errors in dev mode are not captured.");
+    return;
+  }
+
   if (error instanceof Error === false) {
     logger.warn(
       "Bugpilot.captureError: error must be of type Error. Got: ",
       error
     );
-    logger.warn("Bugpilot.captureError: error is not captured");
+    logger.warn("Bugpilot.captureError: error is not captured.");
     return;
   }
 
@@ -24,8 +32,6 @@ export async function captureError(
   }
 
   try {
-    const DEV_MODE = context?.url?.includes("localhost") || "0";
-
     const body = JSON.stringify({
       error: {
         type: "error-click",
@@ -66,6 +72,7 @@ export async function captureError(
     } else {
       const result = await response.json();
       logger.error("Bugpilot.captureError: error failed to send", result);
+      // TODO: report an error that Bugpilot failed.
     }
   } catch (error) {
     logger.error("Bugpilot.captureError: error failed to send", error);

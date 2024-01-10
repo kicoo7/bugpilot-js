@@ -64,10 +64,10 @@ export function getSessionContext(): BugpilotSessionContext | {} {
       context = getSessionContextClient();
     }
   } catch (error) {
-    logger.error(
-      "Bugpilot.getSessionContext: error while getting session context. Returning empty object",
-      error
-    );
+    // logger.error(
+    //   "Bugpilot.getSessionContext: error while getting session context. Returning empty object",
+    //   error
+    // );
   }
 
   return context;
