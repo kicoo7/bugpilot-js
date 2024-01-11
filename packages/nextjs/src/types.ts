@@ -20,6 +20,7 @@ export type BugpilotBuildContext = {
   nextRuntime: string;
   filePath: string;
   functionName: string;
+  debug: string;
 };
 
 export type BugpilotErrorContext = any;

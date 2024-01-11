@@ -7,6 +7,10 @@ export async function captureError(
   const DEV_MODE =
     context?.dev === "true" || context?.url?.includes("localhost") || "0";
 
+  if (context.debug === "true") {
+    logger.setDebug(true);
+  }
+
   logger.debug(
     "Bugpilot.captureError called with error and context: ",
     error,

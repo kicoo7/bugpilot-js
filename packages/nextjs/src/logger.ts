@@ -17,14 +17,12 @@ const logger = {
     console.error(...BANNER("error"), ...args);
   },
   debug(...args: any[]) {
-    console.log("debug: this.debugMode", this.debugMode);
     if (this.debugMode === true) {
       console.debug(...BANNER("debug"), ...args);
     }
   },
   setDebug(value: boolean) {
     this.debugMode = value;
-    console.log("this", this.debugMode);
   },
 };
 

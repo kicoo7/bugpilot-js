@@ -38,6 +38,7 @@ export default function wrappingLoader(
     filePath: getRelativePath(this.resourcePath),
     kind: String(options?.kind),
     workspaceId: String(options?.workspaceId),
+    debug: String(options?.debug),
   };
 
   const ast = babelParser.parse(source, {
