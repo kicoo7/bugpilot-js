@@ -1,7 +1,6 @@
 import { captureError } from "../core";
 import { isBuildPhase, isNotFoundError, isRedirectError } from "./utils";
 import { BugpilotBuildContext } from "../types";
-import { getSessionContext } from "../context/getSessionContext";
 
 export function wrapServerAction(
   fun: (args: [any]) => Promise<void>,
@@ -18,10 +17,8 @@ export function wrapServerAction(
         !isRedirectError(error as Error & { digest?: string }) &&
         !isBuildPhase()
       ) {
-        const sessionContext = getSessionContext();
         await captureError(error as Error & { digest?: string }, {
           ...buildContext,
-          ...sessionContext,
         });
       }
 

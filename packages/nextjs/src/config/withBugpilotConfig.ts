@@ -1,7 +1,6 @@
+import path from "path";
 import { NextConfig } from "next/types";
 import logger from "../logger";
-
-const path = require("path");
 
 // We don't want to log the same message three times because webpack runs three times for each environment server, edge, and client.
 let loggedDebugModeMessage = false;

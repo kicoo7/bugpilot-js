@@ -10,12 +10,7 @@ import {
 import logger from "../logger";
 
 import * as React from "react";
-import { waitUntilBugpilotAvailable } from "./utils";
-
-const BUGPILOT_HOST = "https://script.bugpilot.io";
-const BUGPILOT_SCRIPT_FILENAME = "adopto.js";
-// this value is replaced by the post-build script
-const BUGPILOT_VERSION = "BUGPILOT_VERSION_VALUE";
+import { makeScriptUrl, waitUntilBugpilotAvailable } from "./utils";
 
 declare global {
   interface Window {
@@ -26,14 +21,6 @@ declare global {
     };
   }
 }
-
-const makeScriptUrl = (workspaceId: string) => {
-  const url = new URL(BUGPILOT_HOST);
-  url.pathname = `${workspaceId}/${BUGPILOT_SCRIPT_FILENAME}`;
-  url.searchParams.set("source", "bugpilot-next");
-  url.searchParams.set("packageVersion", BUGPILOT_VERSION);
-  return url.toString();
-};
 
 const BugpilotContext = createContext({
   saveBugReport: (metadata = {}, reportDataOverride = {}) => {},

@@ -1,21 +1,13 @@
+import { getSessionContext } from "./context/getSessionContext";
 import logger from "./logger";
 
 export async function captureError(
   error: Error & { digest?: string },
-  context: any = {}
+  context: any = { debug: "false" }
 ) {
-  const DEV_MODE =
-    context?.dev === "true" || context?.url?.includes("localhost") || "0";
-
   if (context.debug === "true") {
     logger.setDebug(true);
   }
-
-  logger.debug(
-    "Bugpilot.captureError called with error and context: ",
-    error,
-    context
-  );
 
   if (error instanceof Error === false) {
     logger.debug(
@@ -36,32 +28,43 @@ export async function captureError(
     return;
   }
 
-  try {
-    const body = JSON.stringify({
-      error: {
-        type: "error-click",
-        jsErrors: [
-          {
-            message: error.message,
-            stack: error.stack,
-            name: error.name,
-            digest: error?.digest,
-            filePath: context?.filePath,
-            functionName: context?.functionName,
-          },
-        ],
-      },
-      build: context?.buildId,
-      nextRuntime: context?.nextRuntime,
-      workspaceId: context?.workspaceId,
-      userId: context?.anonymousId,
-      reportId: context?.reportId,
-      timestamp: Date.now(),
-      url: context?.url,
-      kind: context?.kind,
-    });
+  const errorContext = { ...context, ...getSessionContext() };
 
-    logger.debug("Bugpilot.captureError: error \n", body);
+  try {
+    const body = JSON.stringify(
+      {
+        error: {
+          type: "error-click",
+          jsErrors: [
+            {
+              message: error.message,
+              stack: error.stack,
+              name: error.name,
+              digest: error?.digest,
+              filePath: errorContext?.filePath,
+              functionName: errorContext?.functionName,
+            },
+          ],
+        },
+        build: errorContext?.buildId,
+        nextRuntime: errorContext?.nextRuntime,
+        workspaceId: errorContext?.workspaceId,
+        userId: errorContext?.anonymousId,
+        reportId: errorContext?.reportId,
+        timestamp: Date.now(),
+        url: errorContext?.url,
+        kind: errorContext?.kind,
+      },
+      null,
+      2
+    );
+
+    logger.debug("Bugpilot.captureError: reporting error \n", body);
+
+    const DEV_MODE =
+      errorContext?.dev === "true" ||
+      errorContext?.url?.includes("localhost") ||
+      "0";
 
     if (DEV_MODE === true) {
       logger.info("Errors are not captured in dev mode.");
@@ -91,21 +94,3 @@ export async function captureError(
     // TODO: report an error that Bugpilot failed.
   }
 }
-
-export const sendReport = ({
-  email,
-  description,
-}: {
-  email: string;
-  description: string;
-}) => {
-  const msg = {
-    type: "io.bugpilot.events.send-report",
-    data: { email, description },
-  };
-
-  // @TODO: also send widgetStartTime, widgetFinishTime,
-  // and add them to metadata (see Bugpilot.ts)
-
-  window.postMessage(msg, "*");
-};
