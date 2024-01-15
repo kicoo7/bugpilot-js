@@ -43,7 +43,7 @@ function getSessionContextServer(): BugpilotSessionContext | {} {
 
   const context = {
     origin: headers().get("origin"),
-    url: headers().get("referer") || "unknown url",
+    url: headers().get("referer") || "https://example.com/",
     anonymousId: cookies().get("com.bugpilot.user.anonymousid")?.value,
     reportId: workspaceIdReportId && workspaceIdReportId[1],
   };

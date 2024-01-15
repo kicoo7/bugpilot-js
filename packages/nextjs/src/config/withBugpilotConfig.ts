@@ -14,6 +14,14 @@ export function withBugpilotConfig(
     throw new Error("Bugpilot: workspaceId is required");
   }
 
+  if (bugpilotConfig?.debug === true) {
+    logger.setDebug(true);
+    if (loggedDebugModeMessage === false) {
+      logger.debug("Bugpilot debug mode enabled.");
+      loggedDebugModeMessage = true;
+    }
+  }
+
   // overwrite any nextConfig properties from bugpilot.config.js
   const newNextConfig = { ...nextConfig, ...bugpilotConfig.next };
 
@@ -31,14 +39,6 @@ export function withBugpilotConfig(
           loggedDevModeMessage = true;
         }
         return newConfig;
-      }
-
-      if (bugpilotConfig?.debug === true) {
-        logger.setDebug(true);
-        if (loggedDebugModeMessage === false) {
-          logger.debug("Bugpilot debug mode enabled.");
-          loggedDebugModeMessage = true;
-        }
       }
 
       if (isServer === true) {
@@ -69,7 +69,8 @@ export function withBugpilotConfig(
         // Wrap all server components
         newConfig.module.rules.unshift({
           test: /\.tsx$/,
-          exclude: /(page|layout|error|global-error|not_found|middleware).tsx$/,
+          exclude:
+            /\/(page|layout|error|global-error|not_found|middleware).tsx$/,
           use: [
             {
               loader: path.resolve(__dirname, "wrappingLoader.js"),
@@ -88,7 +89,7 @@ export function withBugpilotConfig(
         // Wrap all Server Actions (could also be inline)
         newConfig.module.rules.unshift({
           test: /\.(ts|tsx)$/,
-          exclude: /(layout|error|global-error|not_found|middleware).tsx$/,
+          exclude: /\/(layout|error|global-error|not_found|middleware).tsx$/,
           include: /app/,
           use: [
             {
@@ -120,6 +121,7 @@ export function withBugpilotConfig(
             },
           ],
         });
+
         if (nextRuntime === "edge") {
           // Wrap middleware
           newConfig.module.rules.unshift({

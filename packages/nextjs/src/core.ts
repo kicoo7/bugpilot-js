@@ -81,11 +81,12 @@ export async function captureError(
       body,
     });
 
+    const result = await response.json();
+
     if (response.ok === true) {
-      logger.debug("Bugpilot.captureError: error sent successfully");
+      logger.debug("Bugpilot.captureError: error sent successfully", result);
       return;
     } else {
-      const result = await response.json();
       logger.debug("Bugpilot.captureError: error failed to send", result);
       // TODO: report an error that Bugpilot failed.
     }
