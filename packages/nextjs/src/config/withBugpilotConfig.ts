@@ -35,7 +35,7 @@ export function withBugpilotConfig(
 
       if (dev === true) {
         if (loggedDevModeMessage === false) {
-          logger.info("Bugpilot only works in production mode.");
+          logger.info("Bugpilot only captures errors in production.");
           loggedDevModeMessage = true;
         }
         return newConfig;
@@ -46,25 +46,6 @@ export function withBugpilotConfig(
           ...newConfig.module,
           rules: [...(newConfig.module?.rules || [])],
         };
-
-        // Wrap all page components
-        newConfig.module.rules.unshift({
-          test: /\/page.tsx$/,
-          include: /app/,
-          use: [
-            {
-              loader: path.resolve(__dirname, "wrappingLoader.js"),
-              options: {
-                buildId,
-                dev,
-                nextRuntime,
-                kind: "page-component",
-                workspaceId: bugpilotConfig?.workspaceId,
-                debug: bugpilotConfig?.debug,
-              },
-            },
-          ],
-        });
 
         // Wrap all server components
         newConfig.module.rules.unshift({
@@ -79,6 +60,25 @@ export function withBugpilotConfig(
                 dev,
                 nextRuntime,
                 kind: "server-component",
+                workspaceId: bugpilotConfig?.workspaceId,
+                debug: bugpilotConfig?.debug,
+              },
+            },
+          ],
+        });
+
+        // Wrap all page components
+        newConfig.module.rules.unshift({
+          test: /\/page.tsx$/,
+          include: /app/,
+          use: [
+            {
+              loader: path.resolve(__dirname, "wrappingLoader.js"),
+              options: {
+                buildId,
+                dev,
+                nextRuntime,
+                kind: "page-component",
                 workspaceId: bugpilotConfig?.workspaceId,
                 debug: bugpilotConfig?.debug,
               },
