@@ -1,5 +1,6 @@
 export { Bugpilot, useBugpilot } from "./client/Bugpilot";
 export { BugpilotReportBugComponent } from "./client/BugpilotReportBugComponent";
+export { BugpilotErrorPage } from "./client/BugpilotErrorPage";
 export { wrapServerAction } from "./server/wrapServerAction";
 export { wrapServerComponent } from "./server/wrapServerComponent";
 export { wrapMiddleware } from "./server/wrapMiddleware";
