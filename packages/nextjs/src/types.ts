@@ -24,3 +24,11 @@ export type BugpilotBuildContext = {
 };
 
 export type BugpilotErrorContext = any;
+
+export type BugpilotConfig = {
+  workspaceId: string;
+  debug?: boolean;
+  next?: {
+    productionBrowserSourceMaps?: boolean;
+  };
+};

@@ -1,15 +1,15 @@
 import { LoaderContext } from "webpack";
-const babelParser = require("@babel/parser");
-const t = require("@babel/types");
-const traverse = require("@babel/traverse").default;
-const { isReactElement } = require("./utils");
-const generate = require("@babel/generator").default;
+import babelParser from "@babel/parser";
+import t from "@babel/types";
+import traverse from "@babel/traverse";
+import generate from "@babel/generator";
+import { isReactElement } from "./utils";
 
 export default function injectLoader(this: LoaderContext<any>, source: string) {
   const options = this.getOptions();
 
   // set of bugpilot functions that we need to import
-  const imports = new Set();
+  const imports: Set<string> = new Set();
 
   const ast = babelParser.parse(source, {
     sourceType: "module",

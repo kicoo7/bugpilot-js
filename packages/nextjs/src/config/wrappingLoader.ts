@@ -1,9 +1,9 @@
 import { LoaderContext } from "webpack";
-
-const babelParser = require("@babel/parser");
-const t = require("@babel/types");
-const traverse = require("@babel/traverse").default;
-const {
+import babelParser from "@babel/parser";
+import t from "@babel/types";
+import traverse from "@babel/traverse";
+import generate from "@babel/generator";
+import {
   getRelativePath,
   containsServerActions,
   isClientComponent,
@@ -11,15 +11,13 @@ const {
   isServerAction,
   isMiddleware,
   wrap,
-} = require("./utils");
-
-const generate = require("@babel/generator").default;
+} from "./utils";
 
 export default function wrappingLoader(
   this: LoaderContext<any>,
   source: string
 ) {
-  // ignore client components as they are handled by BugpilotErrorPage
+  // Ignore client components. Client errors are handled by the script.
   if (isClientComponent(source)) {
     return source;
   }
@@ -29,7 +27,7 @@ export default function wrappingLoader(
   // checks if there are any Server Actions in the file
   const hasServerActions = containsServerActions(source);
   // set of bugpilot functions that we need to import
-  const imports = new Set();
+  const imports: Set<string> = new Set();
 
   const buildContext = {
     buildId: String(options?.buildId),

@@ -18,7 +18,7 @@ function ErrorPage({
   useEffect(() => {
     captureError(error, { kind: "error-page" });
     saveBugReport({ triggerType: "error-page" });
-  }, []);
+  }, [error]);
 
   return <FallbackDialog reset={reset} />;
 }

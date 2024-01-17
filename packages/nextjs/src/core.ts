@@ -19,6 +19,7 @@ export async function captureError(
   }
 
   if (
+    error.digest &&
     error?.message?.includes(
       "The specific message is omitted in production builds to avoid leaking sensitive details."
     )

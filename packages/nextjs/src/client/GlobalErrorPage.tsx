@@ -18,7 +18,7 @@ function GlobalErrorPage({
   useEffect(() => {
     captureError(error, { kind: "global-error-page" });
     saveBugReport({ triggerType: "global-error-page" });
-  }, []);
+  }, [error]);
 
   return (
     <html>

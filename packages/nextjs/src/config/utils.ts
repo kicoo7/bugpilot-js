@@ -1,5 +1,5 @@
-const path = require("path");
-const t = require("@babel/types");
+import path from "path";
+import t from "@babel/types";
 
 /**
  * Returns the relative path from the project root.
@@ -89,8 +89,8 @@ export function isMiddleware(path) {
  * @param {object} options - options that are passed to the wrapping function
  * @returns
  */
-export function wrap(path, wrapFunctionName: string, options: {}) {
-  let optionsNode = t.nullLiteral();
+export function wrap(path, wrapFunctionName: string, options: any) {
+  let optionsNode: t.Node = t.nullLiteral();
   // transform object to objectExpression
   if (options && typeof options === "object") {
     options = {
@@ -102,7 +102,7 @@ export function wrap(path, wrapFunctionName: string, options: {}) {
     // create a node from the options object
     optionsNode = t.objectExpression(
       Object.entries(options).map(([key, value]) =>
-        t.objectProperty(t.identifier(key), t.stringLiteral(value))
+        t.objectProperty(t.identifier(key), t.stringLiteral(value as string))
       )
     );
   }
